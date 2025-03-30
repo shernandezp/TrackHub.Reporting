@@ -23,7 +23,7 @@ public class BasicReports : EndpointGroupBase
     {
         app.MapGroup(this)
             .RequireAuthorization()
-            .MapPost(GetReport, "GetReport");
+            .MapPost(GetReport);
     }
 
     public async Task<IResult> GetReport(ISender sender, GetReportQuery query)
