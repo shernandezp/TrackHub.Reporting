@@ -5,7 +5,6 @@
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="GraphQL.Client" />
-    <PackageReference Include="Microsoft.AspNetCore.HeaderPropagation" />
     <PackageReference Include="TrackHubCommon.Infrastructure" />
   </ItemGroup>
   <ItemGroup>

@@ -7,7 +7,6 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Ardalis.GuardClauses" />
     <PackageReference Include="coverlet.collector">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

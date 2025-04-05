@@ -6,7 +6,6 @@
   <ItemGroup>
     <PackageReference Include="ClosedXML" />
     <PackageReference Include="TrackHubCommon.Domain" />
-    <PackageReference Include="MediatR" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Resources\Resources.Designer.cs">
