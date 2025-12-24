@@ -3,10 +3,6 @@
     <RootNamespace>TrackHub.Reporting.Web</RootNamespace>
     <AssemblyName>TrackHub.Reporting.Web</AssemblyName>
   </PropertyGroup>
-  <PropertyGroup>
-    <NoWarn>$(NoWarn);AD0001</NoWarn>
-    <AspNetCoreHostingModel>OutOfProcess</AspNetCoreHostingModel>
-  </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\Application\Application.csproj" />
     <ProjectReference Include="..\Infrastructure\GraphQLApi\GraphQLApi.csproj" />
