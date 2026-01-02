@@ -1,10 +1,73 @@
-﻿## Componentes y Recursos Utilizados
+﻿# API de Reportes para TrackHub
+
+## Características Principales
+
+- **Generación de Reportes Excel**: Exportar datos operacionales en formato Excel para análisis fácil
+- **Reportes de Posición en Vivo**: Listado en tiempo real de todos los transportadores con sus ubicaciones actuales
+- **Registros Históricos de Posición**: Consultar historial de posiciones de transportadores en rangos de tiempo específicos
+- **Reportes de Geocercas**: Identificar transportadores actualmente dentro de límites geográficos definidos
+- **Filtrado por Grupos**: Reportes filtrados automáticamente por los grupos asignados al usuario
+- **Interfaz API REST**: Endpoints simples y directos para recuperación de reportes
+- **Arquitectura Escalable**: Diseñada para integrar tipos de reportes adicionales y fuentes de datos
+
+---
+
+## Inicio Rápido
+
+### Requisitos Previos
+
+- .NET 10.0 SDK
+- PostgreSQL 14+
+- TrackHub Authority Server ejecutándose (para autenticación)
+- TrackHub Manager y Router APIs (para acceso a datos)
+
+### Instalación
+
+1. **Clonar el repositorio**:
+   ```bash
+   git clone https://github.com/shernandezp/TrackHub.Reporting.git
+   cd TrackHub.Reporting
+   ```
+
+2. **Configurar las conexiones** en `appsettings.json`:
+   ```json
+   {
+     "ConnectionStrings": {
+       "ManagerConnection": "Host=localhost;Database=trackhub_manager;Username=postgres;Password=yourpassword"
+     },
+     "GraphQL": {
+       "RouterEndpoint": "https://localhost:5001/graphql"
+     }
+   }
+   ```
+
+3. **Iniciar la aplicación**:
+   ```bash
+   dotnet run --project src/Web
+   ```
+
+4. **Acceder a la documentación de la API** en `https://localhost:5001/swagger`
+
+### Ejemplo de Llamada a la API
+
+```bash
+# Obtener reporte en vivo de todos los transportadores
+curl -X GET "https://localhost:5001/api/reports/live" \
+  -H "Authorization: Bearer {tu_token}" \
+  -o reporte_vivo.xlsx
+```
+
+---
+
+## Componentes y Recursos Utilizados
 
 | Componente                | Descripción                                             | Documentación                                                                 |
 |---------------------------|---------------------------------------------------------|-------------------------------------------------------------------------------|
 | .NET Core                 | Plataforma de desarrollo para aplicaciones modernas     | [Documentación .NET Core](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-9/overview) |
 
-# API de Reportes para TrackHub
+---
+
+## Descripción General
 
 ## Características Clave
 
