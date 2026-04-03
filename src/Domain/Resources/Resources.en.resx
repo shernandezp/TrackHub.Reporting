@@ -180,4 +180,19 @@
   <data name="TransporterType" xml:space="preserve">
     <value>Unit Type</value>
   </data>
+  <data name="TransporterName" xml:space="preserve">
+    <value>Unit Name</value>
+  </data>
+  <data name="GeofenceName" xml:space="preserve">
+    <value>Geofence Name</value>
+  </data>
+  <data name="DatetimeIn" xml:space="preserve">
+    <value>Datetime In</value>
+  </data>
+  <data name="DatetimeOut" xml:space="preserve">
+    <value>Datetime Out</value>
+  </data>
+  <data name="TotalTime" xml:space="preserve">
+    <value>Total Time</value>
+  </data>
 </root>

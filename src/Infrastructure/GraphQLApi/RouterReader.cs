@@ -24,7 +24,7 @@ public class RouterReader(IGraphQLClientFactory graphQLClient)
                         satellites
                         mileage
                         ignition
-                        hobbsMeter
+                        hourmeter
                     }
                     altitude
                     address
@@ -60,7 +60,7 @@ public class RouterReader(IGraphQLClientFactory graphQLClient)
                             satellites
                             mileage
                             ignition
-                            hobbsMeter
+                            hourmeter
                         }
                         altitude
                         address

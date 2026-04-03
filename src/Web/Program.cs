@@ -45,6 +45,9 @@ builder.Services.AddHsts(options =>
 });
 builder.Services.AddControllers();
 
+// Add HealthChecks
+builder.Services.AddHealthChecks();
+
 var app = builder.Build();
 
 app.UseHeaderPropagation();
@@ -58,6 +61,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseHealthChecks("/health");
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 

@@ -19,6 +19,7 @@ public static class DependencyInjection
         services.AddScoped<IReport, LiveReport>();
         services.AddScoped<IReport, PositionRecord>();
         services.AddScoped<IReport, TransportersInGeofence>();
+        services.AddScoped<IReport, GeofenceEvents>();
         services.AddSingleton<IReportFactory, ReportFactory>();
         services.AddSingleton<IExcelHelper, ExcelHelper>();
 

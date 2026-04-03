@@ -26,6 +26,8 @@ namespace TrackHub.Reporting.Domain.Helpers;
 /// </summary>
 public sealed class ExcelHelper : IExcelHelper
 {
+    private const int MaxReportRows = 100_000;
+
     /// <summary>
     /// Exports the given data to an Excel file.
     /// </summary>
@@ -37,13 +39,17 @@ public sealed class ExcelHelper : IExcelHelper
     /// <returns>A memory stream containing the Excel file.</returns>
     public byte[] Export<T>(string title, DateTimeOffset? fromDate, DateTimeOffset? toDate, IEnumerable<T> data, CultureInfo culture)
     {
+        var materializedData = data as ICollection<T> ?? [.. data];
+        if (materializedData.Count > MaxReportRows)
+            throw new InvalidOperationException($"Report exceeds the maximum allowed row count of {MaxReportRows}. Please narrow your filters.");
+
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add("Report");
         worksheet.Cell("A1").Value = GetDateLabel(fromDate, toDate, title);
         worksheet.Cell("A1").Style.Font.SetBold(true);
         worksheet.Cell("A1").Style.Font.FontSize = 16;
 
-        var table = worksheet.Cell("A2").InsertTable(data.AsEnumerable());
+        var table = worksheet.Cell("A2").InsertTable(materializedData.AsEnumerable());
 
         var properties = typeof(T).GetProperties().ToList();
 
