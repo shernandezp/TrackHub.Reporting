@@ -12,10 +12,12 @@ public static class DependencyInjection
 
         services.AddHttpClient(Clients.Router,
             client => client.Timeout = TimeSpan.FromSeconds(30))
-            .AddHeaderPropagation();
+            .AddHeaderPropagation()
+            .AddStandardResilienceHandler();
         services.AddHttpClient(Clients.Geofence,
             client => client.Timeout = TimeSpan.FromSeconds(30))
-            .AddHeaderPropagation();
+            .AddHeaderPropagation()
+            .AddStandardResilienceHandler();
 
         services.AddScoped<IRouterReader, RouterReader>();
         services.AddScoped<IGeofenceReader, GeofenceReader>();
