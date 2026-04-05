@@ -6,6 +6,7 @@
 - **Live Position Reports**: Real-time listing of all transporters with their current locations
 - **Historical Position Records**: Query transporter position history within specified time ranges
 - **Geofence Reports**: Identify transporters currently within defined geographic boundaries
+- **Geofence Event Reports**: Track transporter geofence entry/exit history with timestamps, durations, and coordinates
 - **Group-Based Filtering**: Reports automatically filtered by user's assigned groups
 - **REST API Interface**: Simple, straightforward endpoints for report retrieval
 - **Scalable Architecture**: Designed to integrate additional report types and data sources
@@ -78,6 +79,7 @@ The Reporting API for TrackHub is a REST API that provides an interface for Trac
 - **LiveReport**: Lists transporters (units) along with their current location. It is filtered based on the groups assigned to the user.
 - **PositionRecord**: Provides a record of transporter (unit) positions within a specified period.
 - **TransportersInGeofence**: Identifies transporters (units) that are currently within a geofence.
+- **GeofenceEvents**: Lists geofence entry/exit events within a specified date range. Includes transporter name, geofence name, entry/exit timestamps, total time, and coordinates. Supports optional filtering by transporter.
 
 ## License
 

@@ -6,6 +6,7 @@
 - **Reportes de Posición en Vivo**: Listado en tiempo real de todos los transportadores con sus ubicaciones actuales
 - **Registros Históricos de Posición**: Consultar historial de posiciones de transportadores en rangos de tiempo específicos
 - **Reportes de Geocercas**: Identificar transportadores actualmente dentro de límites geográficos definidos
+- **Reportes de Eventos de Geocercas**: Rastrear historial de entrada/salida de geocercas con marcas de tiempo, duraciones y coordenadas
 - **Filtrado por Grupos**: Reportes filtrados automáticamente por los grupos asignados al usuario
 - **Interfaz API REST**: Endpoints simples y directos para recuperación de reportes
 - **Arquitectura Escalable**: Diseñada para integrar tipos de reportes adicionales y fuentes de datos
@@ -78,6 +79,7 @@ La API de Reportes para TrackHub es una API REST que proporciona una interfaz pa
 - **Reporte en Línea**: Lista las unidades junto con su ubicación actual. Se filtra en función de los grupos asignados al usuario. 
 - **Reporte de Posiciones**: Proporciona un registro de las posiciones de las unidades en un período especificado.
 - **Unidades en Geocercas**: Identifica las unidades que se encuentran actualmente dentro de una geocerca.
+- **Eventos de Geocercas**: Lista los eventos de entrada/salida de geocercas dentro de un rango de fechas especificado. Incluye nombre del transportador, nombre de la geocerca, marcas de tiempo de entrada/salida, tiempo total y coordenadas. Soporta filtrado opcional por transportador.
 
 ## Licencia
 
