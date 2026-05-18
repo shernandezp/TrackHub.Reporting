@@ -1,4 +1,4 @@
-﻿namespace TrackHub.Reporting.Domain.Records;
+namespace TrackHub.Reporting.Domain.Records;
 
 public record struct FilterDto(
     string Name,
@@ -13,3 +13,4 @@ public record struct FilterDto(
     double? NumericFilter2,
     double? NumericFilter3
 );
+

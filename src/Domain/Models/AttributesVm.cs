@@ -1,4 +1,4 @@
-﻿namespace TrackHub.Reporting.Domain.Models;
+namespace TrackHub.Reporting.Domain.Models;
 
 public readonly record struct AttributesVm(
 bool? Ignition,

@@ -1,9 +1,4 @@
-namespace TrackHub.Reporting.Domain.Interfaces.Foundation;
-
-public interface IPlatformFeatureReader
-{
-    Task EnsureFeatureEnabledAsync(Guid accountId, string featureKey, CancellationToken cancellationToken);
-}
+namespace TrackHub.Reporting.Domain.Interfaces;
 
 public interface IReportAuditWriter
 {
@@ -18,3 +13,4 @@ public interface IReportAuditWriter
         string? correlationId,
         CancellationToken cancellationToken);
 }
+

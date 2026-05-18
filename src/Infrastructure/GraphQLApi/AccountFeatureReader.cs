@@ -1,10 +1,10 @@
 using TrackHub.Reporting.Domain.Exceptions;
-using TrackHub.Reporting.Domain.Interfaces.Foundation;
+using TrackHub.Reporting.Domain.Interfaces;
 
 namespace TrackHub.Reporting.Infrastructure.GraphQLApi;
 
-public class PlatformFeatureReader(IGraphQLClientFactory graphQLClient)
-    : GraphQLService(graphQLClient.CreateClient(Clients.Manager)), IPlatformFeatureReader
+public class AccountFeatureReader(IGraphQLClientFactory graphQLClient)
+    : GraphQLService(graphQLClient.CreateClient(Clients.Manager)), IAccountFeatureReader
 {
     public async Task EnsureFeatureEnabledAsync(Guid accountId, string featureKey, CancellationToken cancellationToken)
     {
@@ -92,3 +92,4 @@ public class ReportAuditWriter(IGraphQLClientFactory graphQLClient)
         await MutationAsync<object>(request, cancellationToken);
     }
 }
+

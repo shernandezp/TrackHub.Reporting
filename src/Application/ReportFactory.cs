@@ -1,4 +1,4 @@
-﻿using TrackHub.Reporting.Domain.Interfaces.Factory;
+using TrackHub.Reporting.Domain.Interfaces.Factory;
 
 namespace TrackHub.Reporting.Application;
 

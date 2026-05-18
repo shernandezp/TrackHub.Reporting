@@ -1,4 +1,4 @@
-﻿using System.Reflection;
+using System.Reflection;
 using Common.Application;
 using TrackHub.Reporting.Application;
 using TrackHub.Reporting.Application.Report.Factory;
@@ -26,3 +26,4 @@ public static class DependencyInjection
         return services;
     }
 }
+

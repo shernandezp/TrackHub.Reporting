@@ -2,7 +2,7 @@ using Moq;
 using Common.Application.Interfaces;
 using Common.Domain.Constants;
 using TrackHub.Reporting.Application.Report.Queries.Get;
-using TrackHub.Reporting.Domain.Interfaces.Foundation;
+using TrackHub.Reporting.Domain.Interfaces;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
@@ -14,7 +14,7 @@ public class GetReportQueryHandlerEdgeCaseTests
 {
     private Mock<IReportFactory> _reportFactoryMock;
     private Mock<IUser> _userMock;
-    private Mock<IPlatformFeatureReader> _featureReaderMock;
+    private Mock<IAccountFeatureReader> _featureReaderMock;
     private Mock<IReportAuditWriter> _reportAuditWriterMock;
     private GetReportQueryHandler _handler;
     private Mock<IReport> _reportMock;
@@ -25,7 +25,7 @@ public class GetReportQueryHandlerEdgeCaseTests
     {
         _reportFactoryMock = new Mock<IReportFactory>();
         _userMock = new Mock<IUser>();
-        _featureReaderMock = new Mock<IPlatformFeatureReader>();
+        _featureReaderMock = new Mock<IAccountFeatureReader>();
         _reportAuditWriterMock = new Mock<IReportAuditWriter>();
         _reportMock = new Mock<IReport>();
         _accountId = Guid.NewGuid();
@@ -95,3 +95,4 @@ public class GetReportQueryHandlerEdgeCaseTests
         Assert.That(result, Is.EqualTo(largeBytes));
     }
 }
+

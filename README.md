@@ -11,12 +11,6 @@ We believe in the strength of community collaboration to create effective and ac
 ![Image](https://github.com/shernandezp/TrackHub.AuthorityServer/blob/master/src/Web/wwwroot/images/logo.png)
 
 
-## Platform Foundation Enhancements
-
-- Checks the `reports` account feature before generating exports.
-- Reuses source-module visibility rules, including group-scoped access for operational report data.
-- Keeps report exports bounded and auditable so sensitive reads remain account-scoped.
-
 ---
 
 ## Project Repositories
@@ -31,5 +25,6 @@ We believe in the strength of community collaboration to create effective and ac
 | **Geofencing API**          | [https://github.com/shernandezp/TrackHub.Geofencing](https://github.com/shernandezp/TrackHub.Geofencing)    |
 | **Reporting API**           | [https://github.com/shernandezp/TrackHub.Reporting](https://github.com/shernandezp/TrackHub.Reporting)    |
 | **TrackHub Web**            | [https://github.com/shernandezp/TrackHub](https://github.com/shernandezp/TrackHub)          |
+
 
 

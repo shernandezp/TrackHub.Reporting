@@ -13,15 +13,6 @@
 
 ---
 
-
-## Mejoras de Plataforma Base
-
-- Valida la caracteristica de cuenta `reports` antes de generar exportaciones.
-- Reutiliza las reglas de visibilidad del modulo origen, incluyendo acceso por grupos para datos operacionales de reportes.
-- Mantiene exportaciones acotadas y auditables para que las lecturas sensibles permanezcan dentro de la cuenta.
-
----
-
 ## Inicio Rápido
 
 ### Requisitos Previos

@@ -13,15 +13,6 @@
 
 ---
 
-
-## Platform Foundation Enhancements
-
-- Checks the `reports` account feature before generating exports.
-- Reuses source-module visibility rules, including group-scoped access for operational report data.
-- Keeps report exports bounded and auditable so sensitive reads remain account-scoped.
-
----
-
 ## Quick Start
 
 ### Prerequisites
@@ -93,4 +84,5 @@ The Reporting API for TrackHub is a REST API that provides an interface for Trac
 ## License
 
 This project is licensed under the Apache 2.0 License. See the [LICENSE file](https://www.apache.org/licenses/LICENSE-2.0) for more information.
+
 
