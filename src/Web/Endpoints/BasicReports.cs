@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -14,6 +14,7 @@
 //
 
 using TrackHub.Reporting.Application.Report.Queries.Get;
+using TrackHub.Reporting.Domain.Exceptions;
 
 namespace TrackHub.Reporting.Web.Endpoints;
 
@@ -28,10 +29,47 @@ public class BasicReports : EndpointGroupBase
 
     public async Task<IResult> GetReport(ISender sender, GetReportQuery query)
     {
-        var fileContent = await sender.Send(query);
+        byte[] fileContent;
+        try
+        {
+            fileContent = await sender.Send(query);
+        }
+        catch (FeatureDisabledException ex)
+        {
+            return Results.Json(
+                new
+                {
+                    errors = new[]
+                    {
+                        new
+                        {
+                            message = ex.Message,
+                            extensions = new { code = ex.Code, featureKey = ex.FeatureKey }
+                        }
+                    }
+                },
+                statusCode: StatusCodes.Status403Forbidden);
+        }
+        catch (ReportLimitExceededException ex)
+        {
+            return Results.Json(
+                new
+                {
+                    errors = new[]
+                    {
+                        new
+                        {
+                            message = ex.Message,
+                            extensions = new { code = ex.Code, maxRows = ex.MaxRows }
+                        }
+                    }
+                },
+                statusCode: StatusCodes.Status400BadRequest);
+        }
+
         return Results.File(
-                fileContent,
-                "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            );
+            fileContent,
+            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
     }
 }
+

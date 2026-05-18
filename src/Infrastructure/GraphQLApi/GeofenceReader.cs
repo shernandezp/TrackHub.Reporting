@@ -1,4 +1,4 @@
-﻿using TrackHub.Reporting.Domain.Interfaces.Geofence;
+using TrackHub.Reporting.Domain.Interfaces.Geofence;
 using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Infrastructure.GraphQLApi;
@@ -60,3 +60,4 @@ public class GeofenceReader(IGraphQLClientFactory graphQLClient)
         
     }
 }
+

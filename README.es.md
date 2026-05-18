@@ -1,4 +1,4 @@
-﻿# API de Reportes para TrackHub
+# API de Reportes para TrackHub
 
 ## Características Principales
 
@@ -84,3 +84,4 @@ La API de Reportes para TrackHub es una API REST que proporciona una interfaz pa
 ## Licencia
 
 Este proyecto está bajo la Licencia Apache 2.0. Consulta el archivo [LICENSE](https://www.apache.org/licenses/LICENSE-2.0) para más información.
+

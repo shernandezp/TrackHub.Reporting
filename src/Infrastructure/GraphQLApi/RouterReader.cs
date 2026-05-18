@@ -1,4 +1,4 @@
-﻿using TrackHub.Reporting.Domain.Interfaces.Router;
+using TrackHub.Reporting.Domain.Interfaces.Router;
 using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Infrastructure.GraphQLApi;
@@ -89,3 +89,4 @@ public class RouterReader(IGraphQLClientFactory graphQLClient)
         return await QueryAsync<IEnumerable<PositionVm>>(request, cancellationToken);
     }
 }
+

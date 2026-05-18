@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
+// Copyright (c) 2025 Sergio Hernandez. All rights reserved.
 //
 //  Licensed under the Apache License, Version 2.0 (the "License").
 //  You may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@ using System.Globalization;
 using System.Resources;
 using ClosedXML.Excel;
 using Common.Domain.Extensions;
+using TrackHub.Reporting.Domain.Exceptions;
 using TrackHub.Reporting.Domain.Interfaces.Helpers;
 
 namespace TrackHub.Reporting.Domain.Helpers;
@@ -41,7 +42,7 @@ public sealed class ExcelHelper : IExcelHelper
     {
         var materializedData = data as ICollection<T> ?? [.. data];
         if (materializedData.Count > MaxReportRows)
-            throw new InvalidOperationException($"Report exceeds the maximum allowed row count of {MaxReportRows}. Please narrow your filters.");
+            throw new ReportLimitExceededException(MaxReportRows);
 
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add("Report");
@@ -121,3 +122,4 @@ public sealed class ExcelHelper : IExcelHelper
             ? $"{title} - ({fromDate.FormatDateTime()} - {toDate.FormatDateTime()})"
             : fromDate != null ? $"{title} - ({fromDate.Value.DateTime.FormatDate()})" : title;
 }
+
