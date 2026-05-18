@@ -1,9 +1,10 @@
-﻿using TrackHub.Reporting.Domain.Records;
+using TrackHub.Reporting.Domain.Records;
+using TrackHub.Reporting.Domain.Models;
 
 namespace TrackHub.Reporting.Domain.Interfaces.Factory;
 
 public interface IReport
 {
     string ReportCode { get; }
-    Task<byte[]> GenerateAsync(FilterDto filters, CancellationToken cancellationToken);
+    Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken);
 }

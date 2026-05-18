@@ -18,6 +18,7 @@ using Common.Domain.Constants;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
 using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Router;
+using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.Report.Factory;
@@ -25,10 +26,12 @@ namespace TrackHub.Reporting.Application.Report.Factory;
 public class PositionRecord(IRouterReader reader, IExcelHelper helper) : IReport
 {
     public string ReportCode => Reports.PositionRecord;
-    public async Task<byte[]> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         var data = await reader.GetPositionsRecordAsync(filters, cancellationToken);
+        var rows = data as ICollection<PositionVm> ?? [.. data];
         var culture = new CultureInfo(filters.Language);
-        return helper.Export(filters.Name, filters.DateTimeFilter1, filters.DateTimeFilter2, data, culture);
+        var content = helper.Export(filters.Name, filters.DateTimeFilter1, filters.DateTimeFilter2, rows, culture);
+        return new ReportExportResult(content, rows.Count);
     }
 }

@@ -17,6 +17,7 @@ using System.Globalization;
 using System.Resources;
 using ClosedXML.Excel;
 using Common.Domain.Extensions;
+using TrackHub.Reporting.Domain.Exceptions;
 using TrackHub.Reporting.Domain.Interfaces.Helpers;
 
 namespace TrackHub.Reporting.Domain.Helpers;
@@ -41,7 +42,7 @@ public sealed class ExcelHelper : IExcelHelper
     {
         var materializedData = data as ICollection<T> ?? [.. data];
         if (materializedData.Count > MaxReportRows)
-            throw new InvalidOperationException($"Report exceeds the maximum allowed row count of {MaxReportRows}. Please narrow your filters.");
+            throw new ReportLimitExceededException(MaxReportRows);
 
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add("Report");

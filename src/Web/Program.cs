@@ -24,7 +24,7 @@ Guard.Against.Null(allowedCORSOrigins, message: $"Allowed Origins configuration 
 
 // Add services to the container.
 builder.Services.AddApplicationServices();
-builder.Services.AddReportsContext();
+builder.Services.AddReportsContext(builder.Configuration);
 builder.Services.AddInfrastructureServices(builder.Configuration);
 builder.Services.AddWebServices();
 

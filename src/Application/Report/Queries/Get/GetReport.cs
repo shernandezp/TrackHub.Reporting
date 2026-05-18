@@ -13,8 +13,11 @@
 //  limitations under the License.
 //
 
+using System.Text.Json;
 using Common.Application.Attributes;
+using Common.Application.Interfaces;
 using Common.Domain.Constants;
+using TrackHub.Reporting.Domain.Interfaces.Foundation;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
 using TrackHub.Reporting.Domain.Records;
 
@@ -23,7 +26,7 @@ namespace TrackHub.Reporting.Application.Report.Queries.Get;
 [Authorize(Resource = Resources.Reports, Action = Actions.Read)]
 public readonly record struct GetReportQuery(string ReportCode, FilterDto Filters) : IRequest<byte[]>;
 
-public class GetReportQueryHandler(IReportFactory factory)
+public class GetReportQueryHandler(IReportFactory factory, IUser user, IPlatformFeatureReader platformFeatureReader, IReportAuditWriter reportAuditWriter)
         : IRequestHandler<GetReportQuery, byte[]>
 {
 
@@ -35,9 +38,24 @@ public class GetReportQueryHandler(IReportFactory factory)
     /// <returns></returns>
     public async Task<byte[]> Handle(GetReportQuery request, CancellationToken cancellationToken)
     {
+        var accountId = user.AccountId ?? throw new UnauthorizedAccessException();
+        await platformFeatureReader.EnsureFeatureEnabledAsync(accountId, FeatureKeys.Reports, cancellationToken);
+
         /// Get the report implementation from the factory based on the report id
         var report = factory.GetReport(request.ReportCode);
-        return await report.GenerateAsync(request.Filters, cancellationToken);
+        var export = await report.GenerateAsync(request.Filters, cancellationToken);
+        await reportAuditWriter.RecordReportExportAsync(
+            accountId,
+            user.PrincipalType.ToString(),
+            user.UserId?.ToString() ?? user.ClientId ?? user.SubjectId ?? string.Empty,
+            request.ReportCode,
+            JsonSerializer.Serialize(request.Filters),
+            export.RowCount,
+            "xlsx",
+            user.CorrelationId,
+            cancellationToken);
+
+        return export.Content;
     }
 
 }

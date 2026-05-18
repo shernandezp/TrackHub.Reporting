@@ -1,4 +1,4 @@
-﻿# API de Reportes para TrackHub
+# API de Reportes para TrackHub
 
 ## Características Principales
 
@@ -10,6 +10,15 @@
 - **Filtrado por Grupos**: Reportes filtrados automáticamente por los grupos asignados al usuario
 - **Interfaz API REST**: Endpoints simples y directos para recuperación de reportes
 - **Arquitectura Escalable**: Diseñada para integrar tipos de reportes adicionales y fuentes de datos
+
+---
+
+
+## Mejoras de Plataforma Base
+
+- Valida la caracteristica de cuenta `reports` antes de generar exportaciones.
+- Reutiliza las reglas de visibilidad del modulo origen, incluyendo acceso por grupos para datos operacionales de reportes.
+- Mantiene exportaciones acotadas y auditables para que las lecturas sensibles permanezcan dentro de la cuenta.
 
 ---
 
@@ -84,3 +93,4 @@ La API de Reportes para TrackHub es una API REST que proporciona una interfaz pa
 ## Licencia
 
 Este proyecto está bajo la Licencia Apache 2.0. Consulta el archivo [LICENSE](https://www.apache.org/licenses/LICENSE-2.0) para más información.
+
