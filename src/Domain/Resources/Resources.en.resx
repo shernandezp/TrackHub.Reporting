@@ -195,4 +195,142 @@
   <data name="TotalTime" xml:space="preserve">
     <value>Total Time</value>
   </data>
+  <data name="OperatorId" xml:space="preserve">
+    <value>Operator Id</value>
+  </data>
+  <data name="OperatorName" xml:space="preserve">
+    <value>Operator</value>
+  </data>
+  <data name="Operator" xml:space="preserve">
+    <value>Operator</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="UptimePercent" xml:space="preserve">
+    <value>Uptime %</value>
+  </data>
+  <data name="AvgLatencyMs" xml:space="preserve">
+    <value>Avg Latency (ms)</value>
+  </data>
+  <data name="FailureCount" xml:space="preserve">
+    <value>Failures</value>
+  </data>
+  <data name="LastCheckAt" xml:space="preserve">
+    <value>Last Check</value>
+  </data>
+  <data name="LastFailureCode" xml:space="preserve">
+    <value>Last Failure Code</value>
+  </data>
+  <data name="StartedAt" xml:space="preserve">
+    <value>Started</value>
+  </data>
+  <data name="FinishedAt" xml:space="preserve">
+    <value>Finished</value>
+  </data>
+  <data name="Trigger" xml:space="preserve">
+    <value>Trigger</value>
+  </data>
+  <data name="Result" xml:space="preserve">
+    <value>Result</value>
+  </data>
+  <data name="DevicesSynced" xml:space="preserve">
+    <value>Devices Synced</value>
+  </data>
+  <data name="Added" xml:space="preserve">
+    <value>Added</value>
+  </data>
+  <data name="Updated" xml:space="preserve">
+    <value>Updated</value>
+  </data>
+  <data name="Removed" xml:space="preserve">
+    <value>Removed</value>
+  </data>
+  <data name="Ignored" xml:space="preserve">
+    <value>Ignored</value>
+  </data>
+  <data name="FailedDevices" xml:space="preserve">
+    <value>Failed Devices</value>
+  </data>
+  <data name="PositionsRetrieved" xml:space="preserve">
+    <value>Positions Retrieved</value>
+  </data>
+  <data name="CorrelationId" xml:space="preserve">
+    <value>Correlation Id</value>
+  </data>
+  <data name="Date" xml:space="preserve">
+    <value>Date</value>
+  </data>
+  <data name="Runs" xml:space="preserve">
+    <value>Runs</value>
+  </data>
+  <data name="Successes" xml:space="preserve">
+    <value>Successes</value>
+  </data>
+  <data name="Failures" xml:space="preserve">
+    <value>Failures</value>
+  </data>
+  <data name="AvgDurationMs" xml:space="preserve">
+    <value>Avg Duration (ms)</value>
+  </data>
+  <data name="TotalPositions" xml:space="preserve">
+    <value>Total Positions</value>
+  </data>
+  <data name="DeviceId" xml:space="preserve">
+    <value>Device Id</value>
+  </data>
+  <data name="Identifier" xml:space="preserve">
+    <value>Identifier</value>
+  </data>
+  <data name="Serial" xml:space="preserve">
+    <value>Serial</value>
+  </data>
+  <data name="ProviderStatus" xml:space="preserve">
+    <value>Provider Status</value>
+  </data>
+  <data name="DetectedStatus" xml:space="preserve">
+    <value>Detected Status</value>
+  </data>
+  <data name="FirstSeenAt" xml:space="preserve">
+    <value>First Seen</value>
+  </data>
+  <data name="LastSeenAt" xml:space="preserve">
+    <value>Last Seen</value>
+  </data>
+  <data name="AssignedTransporter" xml:space="preserve">
+    <value>Assigned Transporter</value>
+  </data>
+  <data name="AssignedAt" xml:space="preserve">
+    <value>Assigned At</value>
+  </data>
+  <data name="ProviderDisplayName" xml:space="preserve">
+    <value>Provider Name</value>
+  </data>
+  <data name="IgnoredAt" xml:space="preserve">
+    <value>Ignored At</value>
+  </data>
+  <data name="AssignmentType" xml:space="preserve">
+    <value>Assignment Type</value>
+  </data>
+  <data name="EndedAt" xml:space="preserve">
+    <value>Ended</value>
+  </data>
+  <data name="Reason" xml:space="preserve">
+    <value>Reason</value>
+  </data>
+  <data name="LastDeviceDateTime" xml:space="preserve">
+    <value>Last Device DateTime</value>
+  </data>
+  <data name="AgeMinutes" xml:space="preserve">
+    <value>Age (min)</value>
+  </data>
+  <data name="Source" xml:space="preserve">
+    <value>Source</value>
+  </data>
+  <data name="SourceDeviceId" xml:space="preserve">
+    <value>Source Device Id</value>
+  </data>
+  <data name="AccountId" xml:space="preserve">
+    <value>Account Id</value>
+  </data>
 </root>

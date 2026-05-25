@@ -1,6 +1,7 @@
 using TrackHub.Reporting.Infrastructure.GraphQLApi;
 using TrackHub.Reporting.Domain.Interfaces.Router;
 using TrackHub.Reporting.Domain.Interfaces.Geofence;
+using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 
@@ -27,6 +28,7 @@ public static class DependencyInjection
 
         services.AddScoped<IRouterReader, RouterReader>();
         services.AddScoped<IGeofenceReader, GeofenceReader>();
+        services.AddScoped<IGpsManagerReader, GpsManagerReader>();
         services.AddScoped<IAccountFeatureReader, AccountFeatureReader>();
         services.AddScoped<IReportAuditWriter, ReportAuditWriter>();
 
