@@ -12,7 +12,7 @@ public class AccountFeatureReader(IGraphQLClientFactory graphQLClient)
         {
             Query = @"
                 query($accountId: UUID!, $featureKey: String!) {
-                    validateFeatureEnabled(accountId: $accountId, featureKey: $featureKey)
+                    validateFeatureEnabled(query: { accountId: $accountId, featureKey: $featureKey })
                 }",
             Variables = new
             {
@@ -92,4 +92,3 @@ public class ReportAuditWriter(IGraphQLClientFactory graphQLClient)
         await MutationAsync<object>(request, cancellationToken);
     }
 }
-
