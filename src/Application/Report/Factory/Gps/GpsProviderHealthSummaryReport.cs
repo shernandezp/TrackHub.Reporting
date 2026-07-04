@@ -10,8 +10,6 @@ using TrackHub.Reporting.Domain.Records;
 namespace TrackHub.Reporting.Application.Report.Factory.Gps;
 
 public sealed class GpsProviderHealthSummaryReport(
-    IUser user,
-    IAccountFeatureReader features,
     IGpsManagerReader manager,
     IExcelHelper helper) : IReport
 {
@@ -19,8 +17,6 @@ public sealed class GpsProviderHealthSummaryReport(
 
     public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
     {
-        _ = await GpsReportSupport.RequireAccountAsync(user, features, FeatureKeys.GpsOperatorHealth, cancellationToken);
-
         var lookbackHours = filters.NumericFilter1.HasValue && filters.NumericFilter1.Value > 0
             ? (int)Math.Min(filters.NumericFilter1.Value, 24 * 90)
             : 24;
