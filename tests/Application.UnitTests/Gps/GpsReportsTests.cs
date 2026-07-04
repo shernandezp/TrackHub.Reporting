@@ -51,9 +51,9 @@ public class GpsReportsTests
     [Test]
     public void Codes_ShouldMatchSpecConstants()
     {
-        Assert.Multiple(() =>
+        using (Assert.EnterMultipleScope())
         {
-            Assert.That(new GpsProviderHealthSummaryReport(_user.Object, _features.Object, _manager.Object, _excel).ReportCode, Is.EqualTo("gps.provider-health-summary"));
+            Assert.That(new GpsProviderHealthSummaryReport(_manager.Object, _excel).ReportCode, Is.EqualTo("gps.provider-health-summary"));
             Assert.That(new GpsProviderSyncHistoryReport(_user.Object, _features.Object, _manager.Object, _excel).ReportCode, Is.EqualTo("gps.provider-sync-history"));
             Assert.That(new GpsSyncStatisticsReport(_user.Object, _features.Object, _manager.Object, _excel).ReportCode, Is.EqualTo("gps.sync-statistics"));
             Assert.That(new GpsSynchronizedDeviceInventoryReport(_user.Object, _features.Object, _manager.Object, _excel).ReportCode, Is.EqualTo("gps.synchronized-device-inventory"));
@@ -63,17 +63,7 @@ public class GpsReportsTests
             Assert.That(new GpsAssignmentHistoryReport(_user.Object, _features.Object, _manager.Object, _excel).ReportCode, Is.EqualTo("gps.assignment-history"));
             Assert.That(new GpsLatestPositionFreshnessReport(_user.Object, _features.Object, _manager.Object, _excel).ReportCode, Is.EqualTo("gps.latest-position-freshness"));
             Assert.That(new GpsPositionHistoryReport(_user.Object, _features.Object, _manager.Object, _excel).ReportCode, Is.EqualTo("gps.position-history"));
-        });
-    }
-
-    [Test]
-    public void ProviderHealthSummary_ShouldRequireGpsOperatorHealthFeature()
-    {
-        _features.Setup(f => f.EnsureFeatureEnabledAsync(_accountId, FeatureKeys.GpsOperatorHealth, It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new FeatureDisabledException(FeatureKeys.GpsOperatorHealth));
-        var report = new GpsProviderHealthSummaryReport(_user.Object, _features.Object, _manager.Object, _excel);
-        Assert.ThrowsAsync<FeatureDisabledException>(() => report.GenerateAsync(_filters, CancellationToken.None));
-        _manager.Verify(m => m.GetOperatorsAsync(It.IsAny<CancellationToken>()), Times.Never);
+        }
     }
 
     [Test]
@@ -85,7 +75,7 @@ public class GpsReportsTests
         _manager.Setup(m => m.GetOperatorHealthSummaryAsync(opId, 24, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ManagerOperatorHealthSummaryVm(opId, DateTimeOffset.UtcNow.AddDays(-1), 10, 9, 0, 0, 1, 0.9, 25.5, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, "TIMEOUT"));
 
-        var report = new GpsProviderHealthSummaryReport(_user.Object, _features.Object, _manager.Object, _excel);
+        var report = new GpsProviderHealthSummaryReport(_manager.Object, _excel);
         var result = await report.GenerateAsync(_filters, CancellationToken.None);
 
         Assert.That(result.RowCount, Is.EqualTo(1));
