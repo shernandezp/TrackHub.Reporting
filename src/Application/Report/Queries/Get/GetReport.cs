@@ -26,7 +26,7 @@ namespace TrackHub.Reporting.Application.Report.Queries.Get;
 [Authorize(Resource = Resources.Reports, Action = Actions.Read)]
 public readonly record struct GetReportQuery(string ReportCode, FilterDto Filters) : IRequest<byte[]>;
 
-public class GetReportQueryHandler(IReportFactory factory, IUser user, IAccountFeatureReader accountFeatureReader, IReportAuditWriter reportAuditWriter)
+public class GetReportQueryHandler(IReportFactory factory, IUser user, IReportAuditWriter reportAuditWriter)
         : IRequestHandler<GetReportQuery, byte[]>
 {
 
@@ -39,7 +39,6 @@ public class GetReportQueryHandler(IReportFactory factory, IUser user, IAccountF
     public async Task<byte[]> Handle(GetReportQuery request, CancellationToken cancellationToken)
     {
         var accountId = user.AccountId ?? throw new UnauthorizedAccessException();
-        await accountFeatureReader.EnsureFeatureEnabledAsync(accountId, FeatureKeys.Reports, cancellationToken);
 
         /// Get the report implementation from the factory based on the report id
         var report = factory.GetReport(request.ReportCode);

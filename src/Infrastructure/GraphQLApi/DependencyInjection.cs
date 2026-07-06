@@ -2,6 +2,7 @@ using TrackHub.Reporting.Infrastructure.GraphQLApi;
 using TrackHub.Reporting.Domain.Interfaces.Router;
 using TrackHub.Reporting.Domain.Interfaces.Geofence;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
+using TrackHub.Reporting.Domain.Interfaces.Telemetry;
 using TrackHub.Reporting.Domain.Interfaces;
 using Microsoft.Extensions.Configuration;
 
@@ -25,10 +26,15 @@ public static class DependencyInjection
             client => ConfigureGraphQLClient(client, configuration, Clients.Manager))
             .AddHeaderPropagation()
             .AddStandardResilienceHandler();
+        services.AddHttpClient(Clients.Telemetry,
+            client => ConfigureGraphQLClient(client, configuration, Clients.Telemetry))
+            .AddHeaderPropagation()
+            .AddStandardResilienceHandler();
 
         services.AddScoped<IRouterReader, RouterReader>();
         services.AddScoped<IGeofenceReader, GeofenceReader>();
         services.AddScoped<IGpsManagerReader, GpsManagerReader>();
+        services.AddScoped<IGpsTelemetryReader, GpsTelemetryReader>();
         services.AddScoped<IAccountFeatureReader, AccountFeatureReader>();
         services.AddScoped<IReportAuditWriter, ReportAuditWriter>();
 

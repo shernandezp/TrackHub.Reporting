@@ -4,6 +4,7 @@ using TrackHub.Reporting.Domain.Interfaces;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
 using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
+using TrackHub.Reporting.Domain.Interfaces.Telemetry;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
 
@@ -11,6 +12,7 @@ namespace TrackHub.Reporting.Application.Report.Factory.Gps;
 
 public sealed class GpsProviderHealthSummaryReport(
     IGpsManagerReader manager,
+    IGpsTelemetryReader telemetry,
     IExcelHelper helper) : IReport
 {
     public string ReportCode => Reports.GpsProviderHealthSummary;
@@ -25,7 +27,7 @@ public sealed class GpsProviderHealthSummaryReport(
         var rows = new List<GpsProviderHealthRowVm>(operators.Count);
         foreach (var op in operators)
         {
-            var summary = await manager.GetOperatorHealthSummaryAsync(op.OperatorId, lookbackHours, cancellationToken);
+            var summary = await telemetry.GetOperatorHealthSummaryAsync(op.OperatorId, lookbackHours, cancellationToken);
             var status = summary.OfflineChecks > 0 && summary.HealthyChecks == 0
                 ? "Offline"
                 : summary.FailureCount > 0 ? "Degraded" : "Healthy";

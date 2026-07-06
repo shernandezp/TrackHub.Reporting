@@ -14,7 +14,6 @@ public class GetReportQueryHandlerTests
 {
     private Mock<IReportFactory> _reportFactoryMock;
     private Mock<IUser> _userMock;
-    private Mock<IAccountFeatureReader> _featureReaderMock;
     private Mock<IReportAuditWriter> _reportAuditWriterMock;
     private GetReportQueryHandler _handler;
     private Mock<IReport> _reportMock;
@@ -25,7 +24,6 @@ public class GetReportQueryHandlerTests
     {
         _reportFactoryMock = new Mock<IReportFactory>();
         _userMock = new Mock<IUser>();
-        _featureReaderMock = new Mock<IAccountFeatureReader>();
         _reportAuditWriterMock = new Mock<IReportAuditWriter>();
         _reportMock = new Mock<IReport>();
         _accountId = Guid.NewGuid();
@@ -33,11 +31,9 @@ public class GetReportQueryHandlerTests
         _userMock.Setup(u => u.PrincipalType).Returns(PrincipalType.User);
         _userMock.Setup(u => u.UserId).Returns(Guid.NewGuid());
         _userMock.Setup(u => u.CorrelationId).Returns("test-correlation");
-        _featureReaderMock.Setup(r => r.EnsureFeatureEnabledAsync(_accountId, FeatureKeys.Reports, It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
         _reportAuditWriterMock.Setup(w => w.RecordReportExportAsync(_accountId, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
-        _handler = new GetReportQueryHandler(_reportFactoryMock.Object, _userMock.Object, _featureReaderMock.Object, _reportAuditWriterMock.Object);
+        _handler = new GetReportQueryHandler(_reportFactoryMock.Object, _userMock.Object, _reportAuditWriterMock.Object);
     }
 
     [Test]
@@ -58,7 +54,6 @@ public class GetReportQueryHandlerTests
 
         // Assert
         Assert.That(expectedBytes, Is.EqualTo(result));
-        _featureReaderMock.Verify(r => r.EnsureFeatureEnabledAsync(_accountId, FeatureKeys.Reports, cancellationToken), Times.Once);
         _reportFactoryMock.Verify(f => f.GetReport(reportCode), Times.Once);
         _reportMock.Verify(r => r.GenerateAsync(filters, cancellationToken), Times.Once);
         _reportAuditWriterMock.Verify(w => w.RecordReportExportAsync(_accountId, "User", It.IsAny<string>(), reportCode, It.IsAny<string>(), 3, "xlsx", "test-correlation", cancellationToken), Times.Once);
@@ -77,7 +72,6 @@ public class GetReportQueryHandlerTests
 
         // Act & Assert
         Assert.ThrowsAsync<KeyNotFoundException>(async () => await _handler.Handle(query, cancellationToken));
-        _featureReaderMock.Verify(r => r.EnsureFeatureEnabledAsync(_accountId, FeatureKeys.Reports, cancellationToken), Times.Once);
         _reportFactoryMock.Verify(f => f.GetReport(reportCode), Times.Once);
     }
 
@@ -99,7 +93,6 @@ public class GetReportQueryHandlerTests
 
         // Assert
         Assert.That(expectedBytes, Is.EqualTo(result));
-        _featureReaderMock.Verify(r => r.EnsureFeatureEnabledAsync(_accountId, FeatureKeys.Reports, cancellationToken), Times.Once);
         _reportFactoryMock.Verify(f => f.GetReport(reportCode), Times.Once);
         _reportMock.Verify(r => r.GenerateAsync(It.Is<FilterDto>(f => f == filters), cancellationToken), Times.Once);
         _reportAuditWriterMock.Verify(w => w.RecordReportExportAsync(_accountId, "User", It.IsAny<string>(), reportCode, It.IsAny<string>(), 3, "xlsx", "test-correlation", cancellationToken), Times.Once);
@@ -113,8 +106,6 @@ public class GetReportQueryHandlerTests
         Assert.ThrowsAsync<UnauthorizedAccessException>(() =>
             _handler.Handle(new GetReportQuery("TestReport", new FilterDto()), CancellationToken.None));
 
-        _featureReaderMock.Verify(r => r.EnsureFeatureEnabledAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
         _reportFactoryMock.Verify(f => f.GetReport(It.IsAny<string>()), Times.Never);
     }
 }
-

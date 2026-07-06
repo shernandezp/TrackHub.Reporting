@@ -4,6 +4,7 @@ using TrackHub.Reporting.Domain.Interfaces;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
 using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
+using TrackHub.Reporting.Domain.Interfaces.Telemetry;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
 
@@ -13,6 +14,7 @@ public sealed class GpsLatestPositionFreshnessReport(
     IUser user,
     IAccountFeatureReader features,
     IGpsManagerReader manager,
+    IGpsTelemetryReader telemetry,
     IExcelHelper helper) : IReport
 {
     public string ReportCode => Reports.GpsLatestPositionFreshness;
@@ -28,7 +30,7 @@ public sealed class GpsLatestPositionFreshnessReport(
             IReadOnlyCollection<Domain.Models.Manager.ManagerTransporterPositionVm> positions;
             try
             {
-                positions = await manager.GetLatestPositionsAsync(op.OperatorId, cancellationToken);
+                positions = await telemetry.GetLatestPositionsAsync(op.OperatorId, cancellationToken);
             }
             catch
             {

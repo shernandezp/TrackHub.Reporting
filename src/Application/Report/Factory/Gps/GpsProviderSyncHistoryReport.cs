@@ -4,6 +4,7 @@ using TrackHub.Reporting.Domain.Interfaces;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
 using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
+using TrackHub.Reporting.Domain.Interfaces.Telemetry;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
 
@@ -12,7 +13,7 @@ namespace TrackHub.Reporting.Application.Report.Factory.Gps;
 public sealed class GpsProviderSyncHistoryReport(
     IUser user,
     IAccountFeatureReader features,
-    IGpsManagerReader manager,
+    IGpsTelemetryReader telemetry,
     IExcelHelper helper) : IReport
 {
     public string ReportCode => Reports.GpsProviderSyncHistory;
@@ -22,7 +23,7 @@ public sealed class GpsProviderSyncHistoryReport(
         var accountId = await GpsReportSupport.RequireAccountAsync(user, features, FeatureKeys.GpsIntegration, cancellationToken);
         Guid? operatorId = Guid.TryParse(filters.StringFilter1, out var op) ? op : null;
         var take = GpsReportSupport.ResolveTake(filters, 500);
-        var runs = await manager.GetOperatorSyncRunsAsync(accountId, operatorId, take, cancellationToken);
+        var runs = await telemetry.GetOperatorSyncRunsAsync(accountId, operatorId, take, cancellationToken);
         IEnumerable<Domain.Models.Manager.ManagerOperatorSyncRunVm> filtered = runs;
         if (filters.DateTimeFilter1.HasValue)
             filtered = filtered.Where(r => r.StartedAt >= filters.DateTimeFilter1.Value);
