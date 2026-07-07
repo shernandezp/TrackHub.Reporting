@@ -6,17 +6,9 @@ namespace TrackHub.Reporting.Infrastructure.GraphQLApi;
 public class RouterReader(IGraphQLClientFactory graphQLClient)
     : GraphQLService(graphQLClient.CreateClient(Clients.Router)), IRouterReader
 {
-
-    /// <summary>
-    /// Retrieves the device positions asynchronously
-    /// </summary>
-    /// <param name="cancellationToken"></param>
-    /// <returns></returns>
-    public async Task<IEnumerable<PositionVm>> GetDevicePositionsAsync(CancellationToken cancellationToken)
-    {
-        var request = new GraphQLRequest
-        {
-            Query = @"
+    // Single source of truth for the queries this reader sends; the
+    // ServiceContracts tests validate these exact strings against the Router schema.
+    internal const string DevicePositionsByUserQuery = @"
             query {
                 devicePositionsByUser {
                     attributes {
@@ -42,17 +34,9 @@ public class RouterReader(IGraphQLClientFactory graphQLClient)
                     country
                     city
                 }
-            }"
-        };
-        return await QueryAsync<IEnumerable<PositionVm>>(request, cancellationToken);
-        
-    }
+            }";
 
-    public async Task<IEnumerable<PositionVm>> GetPositionsRecordAsync(FilterDto filters, CancellationToken cancellationToken)
-    {
-        var request = new GraphQLRequest
-        {
-            Query = @"
+    internal const string PositionsByTransporterQuery = @"
                 query($transporterId: UUID!, $to: DateTime!, $from: DateTime!) {
                     positionsByTransporter(query: { transporterId: $transporterId, to: $to, from: $from }) {
                         attributes {
@@ -78,7 +62,28 @@ public class RouterReader(IGraphQLClientFactory graphQLClient)
                         country
                         city
                     }
-                }",
+                }";
+
+    /// <summary>
+    /// Retrieves the device positions asynchronously
+    /// </summary>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
+    public async Task<IEnumerable<PositionVm>> GetDevicePositionsAsync(CancellationToken cancellationToken)
+    {
+        var request = new GraphQLRequest
+        {
+            Query = DevicePositionsByUserQuery
+        };
+        return await QueryAsync<IEnumerable<PositionVm>>(request, cancellationToken);
+        
+    }
+
+    public async Task<IEnumerable<PositionVm>> GetPositionsRecordAsync(FilterDto filters, CancellationToken cancellationToken)
+    {
+        var request = new GraphQLRequest
+        {
+            Query = PositionsByTransporterQuery,
             Variables = new
             {
                 transporterId = filters.StringFilter1,

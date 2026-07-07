@@ -142,11 +142,11 @@ namespace TrackHub.Reporting.Domain.Resources {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to HobbsMeter.
+        ///   Looks up a localized string similar to Hourmeter.
         /// </summary>
-        internal static string HobbsMeter {
+        internal static string Hourmeter {
             get {
-                return ResourceManager.GetString("HobbsMeter", resourceCulture);
+                return ResourceManager.GetString("Hourmeter", resourceCulture);
             }
         }
         

@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -144,8 +144,8 @@
   <data name="EventId" xml:space="preserve">
     <value>Event Id</value>
   </data>
-  <data name="HobbsMeter" xml:space="preserve">
-    <value>HobbsMeter</value>
+  <data name="Hourmeter" xml:space="preserve">
+    <value>Hourmeter</value>
   </data>
   <data name="Ignition" xml:space="preserve">
     <value>Ignition</value>
