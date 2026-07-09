@@ -17,4 +17,3 @@ using System.Runtime.CompilerServices;
 
 // The service-contract tests validate the exact query constants this assembly ships.
 [assembly: InternalsVisibleTo("TrackHub.ServiceContracts.Tests")]
-[assembly: InternalsVisibleTo("TrackHub.ServiceContracts.Geofence.Tests")]
