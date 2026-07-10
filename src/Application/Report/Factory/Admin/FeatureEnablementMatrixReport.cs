@@ -22,8 +22,8 @@ using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.Report.Factory.Admin;
 
-// Feature-enablement matrix report (SuperAdministrator, spec 03 §13): accounts × feature keys,
-// enabled/tier. Fans out one accountFeaturesMaster call per account (bounded by account count).
+// Feature-enablement matrix report (SuperAdministrator): accounts × feature keys,
+// enabled/tier. Two Manager calls total: the account list and one batched all-accounts feature read.
 public sealed class FeatureEnablementMatrixReport(IAdminReportReader reader, IExcelHelper helper) : IReport
 {
     public string ReportCode => AdminReportCodes.FeatureEnablementMatrix;
@@ -33,10 +33,17 @@ public sealed class FeatureEnablementMatrixReport(IAdminReportReader reader, IEx
         var accounts = (await reader.GetAccountsAsync(cancellationToken))
             .OrderBy(a => a.Name, StringComparer.OrdinalIgnoreCase);
 
+        var featuresByAccount = (await reader.GetAllAccountFeaturesAsync(cancellationToken))
+            .GroupBy(f => f.AccountId)
+            .ToDictionary(g => g.Key, g => g.ToList());
+
         var rows = new List<FeatureEnablementRowVm>();
         foreach (var account in accounts)
         {
-            var features = await reader.GetAccountFeaturesAsync(account.AccountId, cancellationToken);
+            if (!featuresByAccount.TryGetValue(account.AccountId, out var features))
+            {
+                continue;
+            }
             foreach (var feature in features.OrderBy(f => f.FeatureKey, StringComparer.OrdinalIgnoreCase))
             {
                 rows.Add(new FeatureEnablementRowVm(account.Name, feature.FeatureKey, feature.Enabled, feature.Tier));

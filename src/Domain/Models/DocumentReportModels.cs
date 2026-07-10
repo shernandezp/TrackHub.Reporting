@@ -22,6 +22,11 @@ public readonly record struct ReportDocumentVm(
 
 public readonly record struct ReportDocumentTypeVm(string Category, bool Required, bool Enabled);
 
+// One group-visible transporter with its Active document categories (Manager's batched
+// transporterDocumentCompliance projection — replaces one documentsForOwner call per transporter).
+public readonly record struct TransporterDocumentComplianceVm(
+    Guid TransporterId, string TransporterName, IReadOnlyCollection<string> ActiveCategories);
+
 public readonly record struct ReportShareVm(
     string ResourceType, string ResourceId, string Scopes, string Purpose,
     DateTimeOffset ExpiresAt, DateTimeOffset? RevokedAt, int AccessCount, DateTimeOffset? LastAccessedAt);

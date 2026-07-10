@@ -22,9 +22,10 @@ using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.Report.Factory.Document;
 
-// Missing-required-documents report (spec 04 §13, AC13). For each group-visible transporter, lists the
-// required document types (enabled + required) that lack an Active document. Owner enumeration and the
-// per-owner document read are both group-scoped by the Manager queries.
+// Missing-required-documents report. For each group-visible transporter, lists the
+// required document types (enabled + required) that lack an Active document. Three Manager calls total:
+// the feature gate, the document types, and one batched compliance read (owner visibility enforced
+// server-side — previously one documentsForOwner call per transporter).
 public sealed class MissingRequiredDocumentsReport(IDocumentReportReader reader, IExcelHelper helper) : IReport
 {
     private const string OwnerTypeTransporter = "Transporter";
@@ -46,32 +47,13 @@ public sealed class MissingRequiredDocumentsReport(IDocumentReportReader reader,
             return Export(filters, rows);
         }
 
-        // Enumerate group-visible transporters (a transporter may sit in several groups → dedupe by id).
-        var transporters = new Dictionary<Guid, string>();
-        foreach (var group in await reader.GetGroupsByAccountAsync(cancellationToken))
+        var compliance = await reader.GetTransporterDocumentComplianceAsync(cancellationToken);
+        foreach (var transporter in compliance.OrderBy(t => t.TransporterName, StringComparer.OrdinalIgnoreCase))
         {
-            foreach (var transporter in await reader.GetTransportersByGroupAsync(group.GroupId, cancellationToken))
-            {
-                transporters[transporter.TransporterId] = transporter.Name;
-            }
-        }
-
-        foreach (var (transporterId, name) in transporters.OrderBy(t => t.Value, StringComparer.OrdinalIgnoreCase))
-        {
-            var documents = await reader.GetDocumentsForOwnerAsync(OwnerTypeTransporter, transporterId.ToString(), cancellationToken);
-            if (documents is null)
-            {
-                continue; // owner not visible to the caller → excluded (group-scoping, AC13)
-            }
-
-            var activeCategories = documents
-                .Where(d => string.Equals(d.Status, "Active", StringComparison.OrdinalIgnoreCase))
-                .Select(d => d.Category)
-                .ToHashSet(StringComparer.OrdinalIgnoreCase);
-
+            var activeCategories = transporter.ActiveCategories.ToHashSet(StringComparer.OrdinalIgnoreCase);
             foreach (var category in requiredCategories.Where(c => !activeCategories.Contains(c)).OrderBy(c => c, StringComparer.OrdinalIgnoreCase))
             {
-                rows.Add(new MissingRequiredDocumentRowVm(OwnerTypeTransporter, name, transporterId.ToString(), category));
+                rows.Add(new MissingRequiredDocumentRowVm(OwnerTypeTransporter, transporter.TransporterName, transporter.TransporterId.ToString(), category));
             }
         }
 

@@ -12,24 +12,12 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddReportsContext(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddHeaderPropagation(o => o.Headers.Add("Authorization"));
-
-        services.AddHttpClient(Clients.Router,
-            client => ConfigureGraphQLClient(client, configuration, Clients.Router))
-            .AddHeaderPropagation()
-            .AddStandardResilienceHandler();
-        services.AddHttpClient(Clients.Geofence,
-            client => ConfigureGraphQLClient(client, configuration, Clients.Geofence))
-            .AddHeaderPropagation()
-            .AddStandardResilienceHandler();
-        services.AddHttpClient(Clients.Manager,
-            client => ConfigureGraphQLClient(client, configuration, Clients.Manager))
-            .AddHeaderPropagation()
-            .AddStandardResilienceHandler();
-        services.AddHttpClient(Clients.Telemetry,
-            client => ConfigureGraphQLClient(client, configuration, Clients.Telemetry))
-            .AddHeaderPropagation()
-            .AddStandardResilienceHandler();
+        // Router/Geofence/Telemetry carry queries only — full resilience incl. retry.
+        // Manager also carries the report-audit mutation — retries stay off there.
+        services.AddGraphQLClient(Clients.Router, resilience: GraphQLClientResilience.WithRetry);
+        services.AddGraphQLClient(Clients.Geofence, resilience: GraphQLClientResilience.WithRetry);
+        services.AddGraphQLClient(Clients.Manager);
+        services.AddGraphQLClient(Clients.Telemetry, resilience: GraphQLClientResilience.WithRetry);
 
         services.AddScoped<IRouterReader, RouterReader>();
         services.AddScoped<IGeofenceReader, GeofenceReader>();
@@ -46,14 +34,6 @@ public static class DependencyInjection
         services.AddScoped<Common.Application.Interfaces.IAccountOperationalStatusService, Common.Application.Services.CachedAccountOperationalStatusService>();
 
         return services;
-    }
-
-    private static void ConfigureGraphQLClient(HttpClient client, IConfiguration configuration, string serviceName)
-    {
-        var url = configuration.GetValue<string>($"AppSettings:GraphQL{serviceName}Service")
-            ?? throw new InvalidOperationException($"Setting 'GraphQL{serviceName}Service' not found.");
-        client.BaseAddress = new Uri(url);
-        client.Timeout = TimeSpan.FromSeconds(30);
     }
 }
 

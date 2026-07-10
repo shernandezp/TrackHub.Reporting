@@ -50,7 +50,7 @@ public class ReportAuditWriter(IGraphQLClientFactory graphQLClient)
                         action: ""ReportExported"",
                         resourceType: ""Report"",
                         resourceId: $reportCode,
-                        result: ""Success"",
+                        result: ""Succeeded"",
                         oldValuesJson: null,
                         newValuesJson: $newValuesJson,
                         reason: null,

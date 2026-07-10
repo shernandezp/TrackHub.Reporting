@@ -22,7 +22,7 @@ namespace TrackHub.Reporting.Domain.Interfaces.Manager;
 public interface IAdminReportReader
 {
     Task<IReadOnlyCollection<AdminAccountVm>> GetAccountsAsync(CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<AdminFeatureVm>> GetAccountFeaturesAsync(Guid accountId, CancellationToken cancellationToken);
+    Task<IReadOnlyCollection<AdminAccountFeatureVm>> GetAllAccountFeaturesAsync(CancellationToken cancellationToken);
     Task<IReadOnlyCollection<AdminGroupVm>> GetGroupsByAccountAsync(CancellationToken cancellationToken);
     Task<IReadOnlyCollection<AdminUserVm>> GetUsersByGroupAsync(long groupId, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<AdminTransporterVm>> GetTransportersByGroupAsync(long groupId, CancellationToken cancellationToken);

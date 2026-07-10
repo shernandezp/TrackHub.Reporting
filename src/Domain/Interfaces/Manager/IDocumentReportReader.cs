@@ -28,12 +28,10 @@ public interface IDocumentReportReader
 
     Task<IReadOnlyCollection<ReportDocumentVm>> GetExpiringDocumentsAsync(int withinDays, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<ReportDocumentTypeVm>> GetDocumentTypesAsync(CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<AdminGroupVm>> GetGroupsByAccountAsync(CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<AdminTransporterVm>> GetTransportersByGroupAsync(long groupId, CancellationToken cancellationToken);
 
-    // Returns null when the owner is not visible to the caller (so the caller's account enumeration stays
-    // group-scoped — non-visible owners are excluded rather than crashing the report). AC13.
-    Task<IReadOnlyCollection<ReportDocumentVm>?> GetDocumentsForOwnerAsync(string ownerEntityType, string ownerEntityId, CancellationToken cancellationToken);
+    // Every group-visible transporter with its Active document categories in ONE Manager call;
+    // owner visibility is enforced server-side (AC13 — non-visible owners never appear).
+    Task<IReadOnlyCollection<TransporterDocumentComplianceVm>> GetTransporterDocumentComplianceAsync(CancellationToken cancellationToken);
     Task<IReadOnlyCollection<ReportShareVm>> GetDocumentSharesByAccountAsync(CancellationToken cancellationToken);
     Task<IReadOnlyCollection<ReportDocumentVm>> SearchDocumentsAsync(DateTimeOffset? from, DateTimeOffset? to, CancellationToken cancellationToken);
 }

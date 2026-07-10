@@ -19,7 +19,7 @@ namespace TrackHub.Reporting.Domain.Models;
 public readonly record struct AdminAccountVm(
     Guid AccountId, string Name, string Status, short StatusId, short TypeId, bool Active, DateTimeOffset LastModified);
 
-public readonly record struct AdminFeatureVm(string FeatureKey, bool Enabled, string Tier);
+public readonly record struct AdminAccountFeatureVm(Guid AccountId, string FeatureKey, bool Enabled, string Tier);
 
 public readonly record struct AdminGroupVm(long GroupId, string Name, bool Active, Guid AccountId);
 

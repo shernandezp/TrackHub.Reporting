@@ -43,20 +43,12 @@ public class DocumentReportReader(IGraphQLClientFactory graphQLClient, IUser use
                     }
                 }";
 
-    internal const string GroupsByAccountQuery = @"
-                query {
-                    groupsByAccount { groupId name active accountId }
-                }";
-
-    internal const string TransportersByGroupQuery = @"
-                query($groupId: Long!) {
-                    transportersByGroup(query: { groupId: $groupId }) { transporterId name }
-                }";
-
-    internal const string DocumentsForOwnerQuery = @"
-                query($accountId: UUID!, $ownerEntityType: String!, $ownerEntityId: String!, $skip: Int!, $take: Int!) {
-                    documentsForOwner(query: { accountId: $accountId, ownerEntityType: $ownerEntityType, ownerEntityId: $ownerEntityId, skip: $skip, take: $take }) {
-                        category ownerEntityType ownerEntityId fileName classification status expiresAt
+    // Batched compliance read: every group-visible transporter with its Active document
+    // categories in one call (replaces groups → transporters-per-group → documents-per-owner).
+    internal const string TransporterDocumentComplianceQuery = @"
+                query($accountId: UUID!) {
+                    transporterDocumentCompliance(query: { accountId: $accountId }) {
+                        transporterId transporterName activeCategories
                     }
                 }";
 
@@ -92,34 +84,10 @@ public class DocumentReportReader(IGraphQLClientFactory graphQLClient, IUser use
         return await QueryAsync<List<ReportDocumentTypeVm>>(request, cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<AdminGroupVm>> GetGroupsByAccountAsync(CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<TransporterDocumentComplianceVm>> GetTransporterDocumentComplianceAsync(CancellationToken cancellationToken)
     {
-        var request = new GraphQLRequest { Query = GroupsByAccountQuery };
-        return await QueryAsync<List<AdminGroupVm>>(request, cancellationToken);
-    }
-
-    public async Task<IReadOnlyCollection<AdminTransporterVm>> GetTransportersByGroupAsync(long groupId, CancellationToken cancellationToken)
-    {
-        var request = new GraphQLRequest { Query = TransportersByGroupQuery, Variables = new { groupId } };
-        return await QueryAsync<List<AdminTransporterVm>>(request, cancellationToken);
-    }
-
-    public async Task<IReadOnlyCollection<ReportDocumentVm>?> GetDocumentsForOwnerAsync(string ownerEntityType, string ownerEntityId, CancellationToken cancellationToken)
-    {
-        try
-        {
-            return await FetchAllAsync<ReportDocumentVm>((skip, take) => new GraphQLRequest
-            {
-                Query = DocumentsForOwnerQuery,
-                Variables = new { accountId = AccountId, ownerEntityType, ownerEntityId, skip, take }
-            }, cancellationToken);
-        }
-        catch (GraphQLException)
-        {
-            // Manager returned a GraphQL error (FORBIDDEN when the owner is outside the caller's
-            // visibility) — exclude this owner from the group-scoped report rather than failing it.
-            return null;
-        }
+        var request = new GraphQLRequest { Query = TransporterDocumentComplianceQuery, Variables = new { accountId = AccountId } };
+        return await QueryAsync<List<TransporterDocumentComplianceVm>>(request, cancellationToken);
     }
 
     public Task<IReadOnlyCollection<ReportShareVm>> GetDocumentSharesByAccountAsync(CancellationToken cancellationToken)

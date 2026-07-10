@@ -34,9 +34,12 @@ public class AdminReportReader(IGraphQLClientFactory graphQLClient)
                     }
                 }";
 
-    internal const string AccountFeaturesMasterQuery = @"
-                query($accountId: UUID!) {
-                    accountFeaturesMaster(query: { accountId: $accountId }) {
+    // Batched master read: every account's features in one call (the matrix report previously
+    // fanned out one accountFeaturesMaster call per account).
+    internal const string AllAccountFeaturesMasterQuery = @"
+                query {
+                    allAccountFeaturesMaster {
+                        accountId
                         featureKey
                         enabled
                         tier
@@ -75,10 +78,10 @@ public class AdminReportReader(IGraphQLClientFactory graphQLClient)
         return await QueryAsync<List<AdminAccountVm>>(request, cancellationToken);
     }
 
-    public async Task<IReadOnlyCollection<AdminFeatureVm>> GetAccountFeaturesAsync(Guid accountId, CancellationToken cancellationToken)
+    public async Task<IReadOnlyCollection<AdminAccountFeatureVm>> GetAllAccountFeaturesAsync(CancellationToken cancellationToken)
     {
-        var request = new GraphQLRequest { Query = AccountFeaturesMasterQuery, Variables = new { accountId } };
-        return await QueryAsync<List<AdminFeatureVm>>(request, cancellationToken);
+        var request = new GraphQLRequest { Query = AllAccountFeaturesMasterQuery };
+        return await QueryAsync<List<AdminAccountFeatureVm>>(request, cancellationToken);
     }
 
     public async Task<IReadOnlyCollection<AdminGroupVm>> GetGroupsByAccountAsync(CancellationToken cancellationToken)

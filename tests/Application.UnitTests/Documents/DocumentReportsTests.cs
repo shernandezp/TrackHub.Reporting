@@ -53,12 +53,8 @@ public class DocumentReportsTests
             new ReportDocumentTypeVm("SOAT", true, true),
             new ReportDocumentTypeVm("RTM", true, true),
             new ReportDocumentTypeVm("Photo", false, true)));
-        _reader.Setup(r => r.GetGroupsByAccountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(List(
-            new AdminGroupVm(1, "Group A", true, Guid.NewGuid())));
-        _reader.Setup(r => r.GetTransportersByGroupAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(List(
-            new AdminTransporterVm(transporterId, "Fleet A")));
-        _reader.Setup(r => r.GetDocumentsForOwnerAsync("Transporter", transporterId.ToString(), It.IsAny<CancellationToken>())).ReturnsAsync(List(
-            new ReportDocumentVm("SOAT", "Transporter", transporterId.ToString(), "soat.pdf", "Internal", "Active", null)));
+        _reader.Setup(r => r.GetTransporterDocumentComplianceAsync(It.IsAny<CancellationToken>())).ReturnsAsync(List(
+            new TransporterDocumentComplianceVm(transporterId, "Fleet A", List("SOAT"))));
 
         var result = await new MissingRequiredDocumentsReport(_reader.Object, _excel).GenerateAsync(_filters, CancellationToken.None);
 
@@ -66,29 +62,22 @@ public class DocumentReportsTests
         var rows = _excel.LastRows!.Cast<MissingRequiredDocumentRowVm>().ToList();
         Assert.That(rows.Single().Category, Is.EqualTo("RTM"));
         Assert.That(rows.Single().OwnerName, Is.EqualTo("Fleet A"));
+        // One batched compliance read — never one call per transporter.
+        _reader.Verify(r => r.GetTransporterDocumentComplianceAsync(It.IsAny<CancellationToken>()), Times.Once);
     }
 
     [Test]
-    public async Task MissingRequired_SkipsOwnersNotVisibleToCaller()
+    public async Task MissingRequired_CategoryComparisonIsCaseInsensitive()
     {
-        var visibleId = Guid.NewGuid();
-        var hiddenId = Guid.NewGuid();
+        var transporterId = Guid.NewGuid();
         _reader.Setup(r => r.GetDocumentTypesAsync(It.IsAny<CancellationToken>())).ReturnsAsync(List(
             new ReportDocumentTypeVm("SOAT", true, true)));
-        _reader.Setup(r => r.GetGroupsByAccountAsync(It.IsAny<CancellationToken>())).ReturnsAsync(List(
-            new AdminGroupVm(1, "Group A", true, Guid.NewGuid())));
-        _reader.Setup(r => r.GetTransportersByGroupAsync(1, It.IsAny<CancellationToken>())).ReturnsAsync(List(
-            new AdminTransporterVm(visibleId, "Visible"), new AdminTransporterVm(hiddenId, "Hidden")));
-        // Visible owner has no SOAT → missing; hidden owner returns null (not visible) → excluded entirely.
-        _reader.Setup(r => r.GetDocumentsForOwnerAsync("Transporter", visibleId.ToString(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync(List<ReportDocumentVm>());
-        _reader.Setup(r => r.GetDocumentsForOwnerAsync("Transporter", hiddenId.ToString(), It.IsAny<CancellationToken>()))
-            .ReturnsAsync((IReadOnlyCollection<ReportDocumentVm>?)null);
+        _reader.Setup(r => r.GetTransporterDocumentComplianceAsync(It.IsAny<CancellationToken>())).ReturnsAsync(List(
+            new TransporterDocumentComplianceVm(transporterId, "Fleet A", List("soat"))));
 
         var result = await new MissingRequiredDocumentsReport(_reader.Object, _excel).GenerateAsync(_filters, CancellationToken.None);
 
-        Assert.That(result.RowCount, Is.EqualTo(1));
-        Assert.That(_excel.LastRows!.Cast<MissingRequiredDocumentRowVm>().Single().OwnerName, Is.EqualTo("Visible"));
+        Assert.That(result.RowCount, Is.EqualTo(0));
     }
 
     [Test]
@@ -100,7 +89,7 @@ public class DocumentReportsTests
         var result = await new MissingRequiredDocumentsReport(_reader.Object, _excel).GenerateAsync(_filters, CancellationToken.None);
 
         Assert.That(result.RowCount, Is.EqualTo(0));
-        _reader.Verify(r => r.GetGroupsByAccountAsync(It.IsAny<CancellationToken>()), Times.Never);
+        _reader.Verify(r => r.GetTransporterDocumentComplianceAsync(It.IsAny<CancellationToken>()), Times.Never);
     }
 
     [Test]
