@@ -333,4 +333,79 @@
   <data name="AccountId" xml:space="preserve">
     <value>Account Id</value>
   </data>
+  <data name="AccountName" xml:space="preserve">
+    <value>Account</value>
+  </data>
+  <data name="AccountType" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Active</value>
+  </data>
+  <data name="LastModified" xml:space="preserve">
+    <value>Last Modified</value>
+  </data>
+  <data name="FeatureKey" xml:space="preserve">
+    <value>Feature</value>
+  </data>
+  <data name="Enabled" xml:space="preserve">
+    <value>Enabled</value>
+  </data>
+  <data name="Tier" xml:space="preserve">
+    <value>Tier</value>
+  </data>
+  <data name="GroupName" xml:space="preserve">
+    <value>Group</value>
+  </data>
+  <data name="MemberType" xml:space="preserve">
+    <value>Member Type</value>
+  </data>
+  <data name="MemberName" xml:space="preserve">
+    <value>Member</value>
+  </data>
+  <data name="MemberId" xml:space="preserve">
+    <value>Member Id</value>
+  </data>
+  <data name="Category" xml:space="preserve">
+    <value>Type</value>
+  </data>
+  <data name="OwnerType" xml:space="preserve">
+    <value>Owner Type</value>
+  </data>
+  <data name="OwnerId" xml:space="preserve">
+    <value>Owner Id</value>
+  </data>
+  <data name="OwnerName" xml:space="preserve">
+    <value>Owner Name</value>
+  </data>
+  <data name="FileName" xml:space="preserve">
+    <value>File Name</value>
+  </data>
+  <data name="Classification" xml:space="preserve">
+    <value>Classification</value>
+  </data>
+  <data name="ExpiresAt" xml:space="preserve">
+    <value>Expires At</value>
+  </data>
+  <data name="Scopes" xml:space="preserve">
+    <value>Scopes</value>
+  </data>
+  <data name="Purpose" xml:space="preserve">
+    <value>Purpose</value>
+  </data>
+  <data name="AccessCount" xml:space="preserve">
+    <value>Access Count</value>
+  </data>
+  <data name="LastAccessedAt" xml:space="preserve">
+    <value>Last Accessed</value>
+  </data>
+  <data name="RevokedAt" xml:space="preserve">
+    <value>Revoked At</value>
+  </data>
+  <data name="DocumentCount" xml:space="preserve">
+    <value>Documents</value>
+  </data>
+  <data name="SharedDocumentId" xml:space="preserve">
+    <value>Document Id</value>
+  </data>
 </root>

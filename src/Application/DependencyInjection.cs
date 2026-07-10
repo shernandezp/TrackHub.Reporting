@@ -3,6 +3,8 @@ using Common.Application;
 using TrackHub.Reporting.Application;
 using TrackHub.Reporting.Application.Report.Factory;
 using TrackHub.Reporting.Application.Report.Factory.Gps;
+using TrackHub.Reporting.Application.Report.Factory.Admin;
+using TrackHub.Reporting.Application.Report.Factory.Document;
 using TrackHub.Reporting.Domain.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
 using TrackHub.Reporting.Domain.Interfaces.Helpers;
@@ -31,6 +33,15 @@ public static class DependencyInjection
         services.AddScoped<IReport, GpsAssignmentHistoryReport>();
         services.AddScoped<IReport, GpsLatestPositionFreshnessReport>();
         services.AddScoped<IReport, GpsPositionHistoryReport>();
+        // Account lifecycle / branding reports (spec 03 §13).
+        services.AddScoped<IReport, AccountsByStatusReport>();
+        services.AddScoped<IReport, FeatureEnablementMatrixReport>();
+        services.AddScoped<IReport, GroupMembershipReport>();
+        // Document reports (spec 04 §13).
+        services.AddScoped<IReport, ExpiringDocumentsReport>();
+        services.AddScoped<IReport, MissingRequiredDocumentsReport>();
+        services.AddScoped<IReport, DocumentShareActivityReport>();
+        services.AddScoped<IReport, DocumentUploadVolumeReport>();
         services.AddSingleton<IReportFactory, ReportFactory>();
         services.AddSingleton<IExcelHelper, ExcelHelper>();
 

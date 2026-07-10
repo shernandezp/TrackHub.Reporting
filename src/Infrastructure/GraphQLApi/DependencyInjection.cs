@@ -37,6 +37,13 @@ public static class DependencyInjection
         services.AddScoped<IGpsTelemetryReader, GpsTelemetryReader>();
         services.AddScoped<IAccountFeatureReader, AccountFeatureReader>();
         services.AddScoped<IReportAuditWriter, ReportAuditWriter>();
+        services.AddScoped<IAdminReportReader, AdminReportReader>();
+        services.AddScoped<IDocumentReportReader, DocumentReportReader>();
+
+        // Cross-service account-status enforcement (spec 03 §7.4).
+        services.AddMemoryCache();
+        services.AddScoped<Common.Application.Interfaces.IAccountOperationalStatusReader, AccountOperationalStatusReader>();
+        services.AddScoped<Common.Application.Interfaces.IAccountOperationalStatusService, Common.Application.Services.CachedAccountOperationalStatusService>();
 
         return services;
     }
