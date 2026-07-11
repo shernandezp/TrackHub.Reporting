@@ -34,7 +34,7 @@ public sealed class GpsSyncStatisticsReport(
             filtered = filtered.Where(r => r.StartedAt <= filters.DateTimeFilter2.Value);
 
         var rows = filtered
-            .GroupBy(r => new { Date = r.StartedAt.UtcDateTime.Date, r.OperatorId })
+            .GroupBy(r => new { Date = new DateTimeOffset(r.StartedAt.UtcDateTime.Date, TimeSpan.Zero), r.OperatorId })
             .Select(g =>
             {
                 var successes = g.Count(x => string.Equals(x.Result, "SUCCESS", StringComparison.OrdinalIgnoreCase));

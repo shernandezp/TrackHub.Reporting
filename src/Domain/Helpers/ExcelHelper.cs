@@ -88,7 +88,7 @@ public sealed class ExcelHelper : IExcelHelper
     {
         switch (propertyType)
         {
-            case Type t when t == typeof(DateTime) || t == typeof(DateTime?):
+            case Type t when t == typeof(DateTimeOffset) || t == typeof(DateTimeOffset?):
                 worksheet.Column(colNumber).Style.DateFormat.Format = "yyyy-MM-dd HH:mm";
                 break;
             case Type t when t == typeof(double) || t == typeof(decimal):
@@ -120,6 +120,6 @@ public sealed class ExcelHelper : IExcelHelper
     private static string GetDateLabel(DateTimeOffset? fromDate, DateTimeOffset? toDate, string title)
         => toDate != null
             ? $"{title} - ({fromDate.FormatDateTime()} - {toDate.FormatDateTime()})"
-            : fromDate != null ? $"{title} - ({fromDate.Value.DateTime.FormatDate()})" : title;
+            : fromDate != null ? $"{title} - ({fromDate.FormatDate()})" : title;
 }
 
