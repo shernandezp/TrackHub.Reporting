@@ -6,14 +6,16 @@ namespace TrackHub.Reporting.Infrastructure.GraphQLApi;
 public class AccountFeatureReader(IGraphQLClientFactory graphQLClient)
     : GraphQLService(graphQLClient.CreateClient(Clients.Manager)), IAccountFeatureReader
 {
+    internal const string ValidateFeatureEnabledQuery = @"
+                query($accountId: UUID!, $featureKey: String!) {
+                    validateFeatureEnabled(query: { accountId: $accountId, featureKey: $featureKey })
+                }";
+
     public async Task EnsureFeatureEnabledAsync(Guid accountId, string featureKey, CancellationToken cancellationToken)
     {
         var request = new GraphQLRequest
         {
-            Query = @"
-                query($accountId: UUID!, $featureKey: String!) {
-                    validateFeatureEnabled(query: { accountId: $accountId, featureKey: $featureKey })
-                }",
+            Query = ValidateFeatureEnabledQuery,
             Variables = new
             {
                 accountId,
@@ -32,20 +34,7 @@ public class AccountFeatureReader(IGraphQLClientFactory graphQLClient)
 public class ReportAuditWriter(IGraphQLClientFactory graphQLClient)
     : GraphQLService(graphQLClient.CreateClient(Clients.Manager)), IReportAuditWriter
 {
-    public async Task RecordReportExportAsync(
-        Guid accountId,
-        string actorType,
-        string actorId,
-        string reportCode,
-        string filtersJson,
-        int rowCount,
-        string format,
-        string? correlationId,
-        CancellationToken cancellationToken)
-    {
-        var request = new GraphQLRequest
-        {
-            Query = @"
+    internal const string CreateAuditEventMutation = @"
                 mutation(
                     $accountId: UUID!,
                     $actorType: String!,
@@ -61,7 +50,7 @@ public class ReportAuditWriter(IGraphQLClientFactory graphQLClient)
                         action: ""ReportExported"",
                         resourceType: ""Report"",
                         resourceId: $reportCode,
-                        result: ""Success"",
+                        result: ""Succeeded"",
                         oldValuesJson: null,
                         newValuesJson: $newValuesJson,
                         reason: null,
@@ -71,7 +60,22 @@ public class ReportAuditWriter(IGraphQLClientFactory graphQLClient)
                     }}) {
                         auditEventId
                     }
-                }",
+                }";
+
+    public async Task RecordReportExportAsync(
+        Guid accountId,
+        string actorType,
+        string actorId,
+        string reportCode,
+        string filtersJson,
+        int rowCount,
+        string format,
+        string? correlationId,
+        CancellationToken cancellationToken)
+    {
+        var request = new GraphQLRequest
+        {
+            Query = CreateAuditEventMutation,
             Variables = new
             {
                 accountId,

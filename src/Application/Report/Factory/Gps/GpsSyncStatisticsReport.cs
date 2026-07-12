@@ -4,6 +4,7 @@ using TrackHub.Reporting.Domain.Interfaces;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
 using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
+using TrackHub.Reporting.Domain.Interfaces.Telemetry;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
 
@@ -13,6 +14,7 @@ public sealed class GpsSyncStatisticsReport(
     IUser user,
     IAccountFeatureReader features,
     IGpsManagerReader manager,
+    IGpsTelemetryReader telemetry,
     IExcelHelper helper) : IReport
 {
     public string ReportCode => Reports.GpsSyncStatistics;
@@ -21,7 +23,7 @@ public sealed class GpsSyncStatisticsReport(
     {
         var accountId = await GpsReportSupport.RequireAccountAsync(user, features, FeatureKeys.GpsIntegration, cancellationToken);
         var take = GpsReportSupport.ResolveTake(filters);
-        var runs = await manager.GetOperatorSyncRunsAsync(accountId, null, take, cancellationToken);
+        var runs = await telemetry.GetOperatorSyncRunsAsync(accountId, null, take, cancellationToken);
         var operators = (await manager.GetOperatorsAsync(cancellationToken))
             .ToDictionary(o => o.OperatorId, o => o.Name);
 
@@ -32,7 +34,7 @@ public sealed class GpsSyncStatisticsReport(
             filtered = filtered.Where(r => r.StartedAt <= filters.DateTimeFilter2.Value);
 
         var rows = filtered
-            .GroupBy(r => new { Date = r.StartedAt.UtcDateTime.Date, r.OperatorId })
+            .GroupBy(r => new { Date = new DateTimeOffset(r.StartedAt.UtcDateTime.Date, TimeSpan.Zero), r.OperatorId })
             .Select(g =>
             {
                 var successes = g.Count(x => string.Equals(x.Result, "SUCCESS", StringComparison.OrdinalIgnoreCase));

@@ -1,6 +1,5 @@
 using Moq;
 using Common.Application.Interfaces;
-using Common.Domain.Constants;
 using TrackHub.Reporting.Application.Report.Queries.Get;
 using TrackHub.Reporting.Domain.Interfaces;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
@@ -14,7 +13,6 @@ public class GetReportQueryHandlerEdgeCaseTests
 {
     private Mock<IReportFactory> _reportFactoryMock;
     private Mock<IUser> _userMock;
-    private Mock<IAccountFeatureReader> _featureReaderMock;
     private Mock<IReportAuditWriter> _reportAuditWriterMock;
     private GetReportQueryHandler _handler;
     private Mock<IReport> _reportMock;
@@ -25,18 +23,15 @@ public class GetReportQueryHandlerEdgeCaseTests
     {
         _reportFactoryMock = new Mock<IReportFactory>();
         _userMock = new Mock<IUser>();
-        _featureReaderMock = new Mock<IAccountFeatureReader>();
         _reportAuditWriterMock = new Mock<IReportAuditWriter>();
         _reportMock = new Mock<IReport>();
         _accountId = Guid.NewGuid();
         _userMock.Setup(u => u.AccountId).Returns(_accountId);
         _userMock.Setup(u => u.PrincipalType).Returns(PrincipalType.User);
         _userMock.Setup(u => u.UserId).Returns(Guid.NewGuid());
-        _featureReaderMock.Setup(r => r.EnsureFeatureEnabledAsync(_accountId, FeatureKeys.Reports, It.IsAny<CancellationToken>()))
-            .Returns(Task.CompletedTask);
         _reportAuditWriterMock.Setup(w => w.RecordReportExportAsync(_accountId, It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string?>(), It.IsAny<CancellationToken>()))
             .Returns(Task.CompletedTask);
-        _handler = new GetReportQueryHandler(_reportFactoryMock.Object, _userMock.Object, _featureReaderMock.Object, _reportAuditWriterMock.Object);
+        _handler = new GetReportQueryHandler(_reportFactoryMock.Object, _userMock.Object, _reportAuditWriterMock.Object);
     }
 
     [Test]
@@ -91,7 +86,7 @@ public class GetReportQueryHandlerEdgeCaseTests
         var result = await _handler.Handle(new GetReportQuery(reportCode, filters), CancellationToken.None);
 
         // Assert
-        Assert.That(result.Length, Is.EqualTo(10_000));
+        Assert.That(result, Has.Length.EqualTo(10_000));
         Assert.That(result, Is.EqualTo(largeBytes));
     }
 }

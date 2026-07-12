@@ -19,11 +19,7 @@ namespace TrackHub.Reporting.Domain.Interfaces.Manager;
 public interface IGpsManagerReader
 {
     Task<IReadOnlyCollection<ManagerOperatorVm>> GetOperatorsAsync(CancellationToken cancellationToken);
-    Task<ManagerOperatorHealthSummaryVm> GetOperatorHealthSummaryAsync(Guid operatorId, int lookbackHours, CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<ManagerOperatorSyncRunVm>> GetOperatorSyncRunsAsync(Guid accountId, Guid? operatorId, int take, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<ManagerDeviceVm>> GetSynchronizedDevicesAsync(Guid accountId, string? detectedStatus, Guid? operatorId, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<ManagerDeviceVm>> GetUnassignedDevicesAsync(Guid accountId, CancellationToken cancellationToken);
     Task<IReadOnlyCollection<ManagerTransporterDeviceAssignmentVm>> GetAssignmentsByAccountAsync(Guid accountId, bool activeOnly, CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<ManagerTransporterPositionVm>> GetLatestPositionsAsync(Guid operatorId, CancellationToken cancellationToken);
-    Task<IReadOnlyCollection<ManagerTransporterPositionHistoryVm>> GetPositionHistoryAsync(Guid accountId, Guid? transporterId, Guid? deviceId, int take, CancellationToken cancellationToken);
 }

@@ -6,6 +6,30 @@ namespace TrackHub.Reporting.Infrastructure.GraphQLApi;
 public class GeofenceReader(IGraphQLClientFactory graphQLClient)
     : GraphQLService(graphQLClient.CreateClient(Clients.Geofence)), IGeofenceReader
 {
+    // Single source of truth for the queries this reader sends; the
+    // ServiceContracts tests validate these exact strings against the Geofence schema.
+    internal const string TransportersInGeofenceQuery = @"
+                query {
+                    transportersInGeofence {
+                      transporterName
+                      transporterId
+                      geofenceName
+                      geofenceId
+                    }
+              }";
+
+    internal const string GeofenceEventsQuery = @"
+                query($from: DateTime!, $to: DateTime!, $transporterId: UUID) {
+                    geofenceEvents(query: {from: $from, to: $to, transporterId: $transporterId}) {
+                        transporterName
+                        geofenceName
+                        datetimeIn
+                        datetimeOut
+                        totalTime
+                        latitude
+                        longitude
+                    }
+                }";
 
     /// <summary>
     /// Retrieves the device positions asynchronously
@@ -16,15 +40,7 @@ public class GeofenceReader(IGraphQLClientFactory graphQLClient)
     {
         var request = new GraphQLRequest
         {
-            Query = @"
-                query {
-                    transportersInGeofence {
-                      transporterName
-                      transporterId
-                      geofenceName
-                      geofenceId
-                    }
-              }"
+            Query = TransportersInGeofenceQuery
         };
         return await QueryAsync<IEnumerable<TransporterInGeofenceVm>>(request, cancellationToken);
 
@@ -37,18 +53,7 @@ public class GeofenceReader(IGraphQLClientFactory graphQLClient)
     {
         var request = new GraphQLRequest
         {
-            Query = @"
-                query($from: DateTime!, $to: DateTime!, $transporterId: UUID) {
-                    geofenceEvents(query: {from: $from, to: $to, transporterId: $transporterId}) {
-                        transporterName
-                        geofenceName
-                        datetimeIn
-                        datetimeOut
-                        totalTime
-                        latitude
-                        longitude
-                    }
-                }",
+            Query = GeofenceEventsQuery,
             Variables = new
             {
                 from = filters.DateTimeFilter1,
