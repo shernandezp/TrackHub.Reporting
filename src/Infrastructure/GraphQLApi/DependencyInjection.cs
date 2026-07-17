@@ -27,6 +27,8 @@ public static class DependencyInjection
         services.AddScoped<IReportAuditWriter, ReportAuditWriter>();
         services.AddScoped<IAdminReportReader, AdminReportReader>();
         services.AddScoped<IDocumentReportReader, DocumentReportReader>();
+        services.AddScoped<IReportCatalogReader, ReportCatalogReader>();
+        services.AddScoped<IReportBrandingReader, ReportBrandingReader>();
 
         // Cross-service account-status enforcement (spec 03 §7.4).
         services.AddMemoryCache();

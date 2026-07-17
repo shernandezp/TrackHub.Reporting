@@ -4,10 +4,9 @@
 //  You may not use this file except in compliance with the License.
 //
 
-using System.Globalization;
 using Common.Application.Interfaces;
 using TrackHub.Reporting.Domain.Interfaces;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
+using TrackHub.Reporting.Domain.Options;
 using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.Report.Factory.Gps;
@@ -15,7 +14,6 @@ namespace TrackHub.Reporting.Application.Report.Factory.Gps;
 internal static class GpsReportSupport
 {
     public const int DefaultPageSize = 5000;
-    public const int MaxExportRows = 100_000;
 
     public static async Task<Guid> RequireAccountAsync(IUser user, IAccountFeatureReader features, string featureKey, CancellationToken ct)
     {
@@ -24,19 +22,14 @@ internal static class GpsReportSupport
         return accountId;
     }
 
-    public static byte[] Export<T>(IExcelHelper helper, FilterDto filters, ICollection<T> rows)
-    {
-        var culture = new CultureInfo(filters.Language);
-        return helper.Export(filters.Name, filters.DateTimeFilter1, filters.DateTimeFilter2, rows, culture);
-    }
-
-    public static int ResolveTake(FilterDto filters, int defaultTake = DefaultPageSize)
+    // Clamp ceiling comes from configuration (spec 06 §7.1) — the caller passes the resolved limits.
+    public static int ResolveTake(FilterDto filters, ReportingLimitsOptions limits, int defaultTake = DefaultPageSize)
     {
         if (!filters.NumericFilter1.HasValue || filters.NumericFilter1.Value <= 0)
         {
             return defaultTake;
         }
 
-        return (int)Math.Min(filters.NumericFilter1.Value, MaxExportRows);
+        return (int)Math.Min(filters.NumericFilter1.Value, limits.MaxExportRows);
     }
 }

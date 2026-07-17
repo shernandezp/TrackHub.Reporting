@@ -13,9 +13,7 @@
 //  limitations under the License.
 //
 
-using System.Globalization;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
@@ -24,11 +22,11 @@ namespace TrackHub.Reporting.Application.Report.Factory.Admin;
 
 // Feature-enablement matrix report (SuperAdministrator): accounts × feature keys,
 // enabled/tier. Two Manager calls total: the account list and one batched all-accounts feature read.
-public sealed class FeatureEnablementMatrixReport(IAdminReportReader reader, IExcelHelper helper) : IReport
+public sealed class FeatureEnablementMatrixReport(IAdminReportReader reader) : IReport
 {
     public string ReportCode => AdminReportCodes.FeatureEnablementMatrix;
 
-    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         var accounts = (await reader.GetAccountsAsync(cancellationToken))
             .OrderBy(a => a.Name, StringComparer.OrdinalIgnoreCase);
@@ -50,8 +48,6 @@ public sealed class FeatureEnablementMatrixReport(IAdminReportReader reader, IEx
             }
         }
 
-        var culture = new CultureInfo(filters.Language);
-        var bytes = helper.Export(filters.Name, filters.DateTimeFilter1, filters.DateTimeFilter2, rows, culture);
-        return new ReportExportResult(bytes, rows.Count);
+        return ReportDataset.Create(filters, rows);
     }
 }

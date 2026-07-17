@@ -2,7 +2,6 @@ using Common.Application.Interfaces;
 using Common.Domain.Constants;
 using TrackHub.Reporting.Domain.Interfaces;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
@@ -12,12 +11,11 @@ namespace TrackHub.Reporting.Application.Report.Factory.Gps;
 public sealed class GpsSynchronizedDeviceInventoryReport(
     IUser user,
     IAccountFeatureReader features,
-    IGpsManagerReader manager,
-    IExcelHelper helper) : IReport
+    IGpsManagerReader manager) : IReport
 {
     public string ReportCode => Reports.GpsSynchronizedDeviceInventory;
 
-    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         var accountId = await GpsReportSupport.RequireAccountAsync(user, features, FeatureKeys.GpsIntegration, cancellationToken);
         Guid? operatorId = Guid.TryParse(filters.StringFilter1, out var op) ? op : null;
@@ -43,7 +41,6 @@ public sealed class GpsSynchronizedDeviceInventoryReport(
                 assignment.TransporterDeviceAssignmentId == Guid.Empty ? null : assignment.TransporterId.ToString(),
                 assignment.TransporterDeviceAssignmentId == Guid.Empty ? null : assignment.EffectiveFrom);
         }).ToList();
-        var bytes = GpsReportSupport.Export(helper, filters, rows);
-        return new ReportExportResult(bytes, rows.Count);
+        return ReportDataset.Create(filters, rows);
     }
 }

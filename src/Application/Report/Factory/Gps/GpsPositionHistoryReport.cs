@@ -2,10 +2,9 @@ using Common.Application.Interfaces;
 using Common.Domain.Constants;
 using TrackHub.Reporting.Domain.Interfaces;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
-using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Interfaces.Telemetry;
 using TrackHub.Reporting.Domain.Models;
+using TrackHub.Reporting.Domain.Options;
 using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.Report.Factory.Gps;
@@ -14,16 +13,16 @@ public sealed class GpsPositionHistoryReport(
     IUser user,
     IAccountFeatureReader features,
     IGpsTelemetryReader telemetry,
-    IExcelHelper helper) : IReport
+    ReportingLimitsOptions limits) : IReport
 {
     public string ReportCode => Reports.GpsPositionHistory;
 
-    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         var accountId = await GpsReportSupport.RequireAccountAsync(user, features, FeatureKeys.GpsPositionHistory, cancellationToken);
         Guid? transporterId = Guid.TryParse(filters.StringFilter1, out var t) ? t : null;
         Guid? deviceId = Guid.TryParse(filters.StringFilter2, out var d) ? d : null;
-        var take = GpsReportSupport.ResolveTake(filters);
+        var take = GpsReportSupport.ResolveTake(filters, limits);
         var history = await telemetry.GetPositionHistoryAsync(accountId, transporterId, deviceId, take, cancellationToken);
         IEnumerable<Domain.Models.Manager.ManagerTransporterPositionHistoryVm> filtered = history;
         if (filters.DateTimeFilter1.HasValue)
@@ -40,7 +39,6 @@ public sealed class GpsPositionHistoryReport(
                 p.DeviceId,
                 p.AccountId))
             .ToList();
-        var bytes = GpsReportSupport.Export(helper, filters, rows);
-        return new ReportExportResult(bytes, rows.Count);
+        return ReportDataset.Create(filters, rows);
     }
 }

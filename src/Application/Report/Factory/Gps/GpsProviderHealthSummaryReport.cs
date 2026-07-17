@@ -1,8 +1,5 @@
-using Common.Application.Interfaces;
 using Common.Domain.Constants;
-using TrackHub.Reporting.Domain.Interfaces;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Interfaces.Telemetry;
 using TrackHub.Reporting.Domain.Models;
@@ -12,12 +9,11 @@ namespace TrackHub.Reporting.Application.Report.Factory.Gps;
 
 public sealed class GpsProviderHealthSummaryReport(
     IGpsManagerReader manager,
-    IGpsTelemetryReader telemetry,
-    IExcelHelper helper) : IReport
+    IGpsTelemetryReader telemetry) : IReport
 {
     public string ReportCode => Reports.GpsProviderHealthSummary;
 
-    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         var lookbackHours = filters.NumericFilter1.HasValue && filters.NumericFilter1.Value > 0
             ? (int)Math.Min(filters.NumericFilter1.Value, 24 * 90)
@@ -41,7 +37,6 @@ public sealed class GpsProviderHealthSummaryReport(
                 summary.LastCheckAt,
                 summary.LastFailureCode));
         }
-        var bytes = GpsReportSupport.Export(helper, filters, rows);
-        return new ReportExportResult(bytes, rows.Count);
+        return ReportDataset.Create(filters, rows);
     }
 }

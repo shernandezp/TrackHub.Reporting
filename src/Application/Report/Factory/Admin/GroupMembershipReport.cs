@@ -13,9 +13,7 @@
 //  limitations under the License.
 //
 
-using System.Globalization;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
@@ -24,14 +22,14 @@ namespace TrackHub.Reporting.Application.Report.Factory.Admin;
 
 // Group-membership export (Account Administrator, account-scoped, spec 03 §13): one row per group ↔
 // user/transporter assignment. The Manager `groupsByAccount` query is scoped to the caller's account.
-public sealed class GroupMembershipReport(IAdminReportReader reader, IExcelHelper helper) : IReport
+public sealed class GroupMembershipReport(IAdminReportReader reader) : IReport
 {
     private const string MemberTypeUser = "User";
     private const string MemberTypeTransporter = "Transporter";
 
     public string ReportCode => AdminReportCodes.GroupMembership;
 
-    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         var groups = (await reader.GetGroupsByAccountAsync(cancellationToken))
             .OrderBy(g => g.Name, StringComparer.OrdinalIgnoreCase);
@@ -52,8 +50,6 @@ public sealed class GroupMembershipReport(IAdminReportReader reader, IExcelHelpe
             }
         }
 
-        var culture = new CultureInfo(filters.Language);
-        var bytes = helper.Export(filters.Name, filters.DateTimeFilter1, filters.DateTimeFilter2, rows, culture);
-        return new ReportExportResult(bytes, rows.Count);
+        return ReportDataset.Create(filters, rows);
     }
 }

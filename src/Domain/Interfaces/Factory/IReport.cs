@@ -6,5 +6,8 @@ namespace TrackHub.Reporting.Domain.Interfaces.Factory;
 public interface IReport
 {
     string ReportCode { get; }
-    Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken);
+
+    // Fetches the report's data and projects it into a format-agnostic dataset. The execution pipeline
+    // then renders it (Excel/PDF) or serializes it (preview) — spec 06 §6/§7.2.
+    Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken);
 }

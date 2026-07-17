@@ -13,9 +13,7 @@
 //  limitations under the License.
 //
 
-using System.Globalization;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
@@ -24,11 +22,11 @@ namespace TrackHub.Reporting.Application.Report.Factory.Document;
 
 // Expiring-documents report (spec 04 §13). Active documents with an ExpiresAt inside the window
 // (NumericFilter1 days, default 30). Owner-visibility + classification are enforced by the Manager query.
-public sealed class ExpiringDocumentsReport(IDocumentReportReader reader, IExcelHelper helper) : IReport
+public sealed class ExpiringDocumentsReport(IDocumentReportReader reader) : IReport
 {
     public string ReportCode => DocumentReportCodes.ExpiringDocuments;
 
-    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         await reader.EnsureDocumentsFeatureAsync(cancellationToken);
 
@@ -41,8 +39,6 @@ public sealed class ExpiringDocumentsReport(IDocumentReportReader reader, IExcel
             .Select(d => new ExpiringDocumentRowVm(d.Category, d.OwnerEntityType, d.OwnerEntityId, d.FileName, d.Classification, d.Status, d.ExpiresAt))
             .ToList();
 
-        var culture = new CultureInfo(filters.Language);
-        var bytes = helper.Export(filters.Name, filters.DateTimeFilter1, filters.DateTimeFilter2, rows, culture);
-        return new ReportExportResult(bytes, rows.Count);
+        return ReportDataset.Create(filters, rows);
     }
 }

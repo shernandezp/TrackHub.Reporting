@@ -44,6 +44,7 @@ public static class DependencyInjection
         services.AddScoped<IReport, DocumentUploadVolumeReport>();
         services.AddSingleton<IReportFactory, ReportFactory>();
         services.AddSingleton<IExcelHelper, ExcelHelper>();
+        services.AddSingleton<IPdfReportBuilder, PdfReportBuilder>();
 
         return services;
     }

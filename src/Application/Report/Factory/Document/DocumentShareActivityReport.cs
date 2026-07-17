@@ -13,9 +13,7 @@
 //  limitations under the License.
 //
 
-using System.Globalization;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
@@ -24,13 +22,13 @@ namespace TrackHub.Reporting.Application.Report.Factory.Document;
 
 // Document share-activity report (spec 04 §13): every Document public-link grant with its access count,
 // last-access, expiry, and revocation. Filters the account's grants to ResourceType = "Document".
-public sealed class DocumentShareActivityReport(IDocumentReportReader reader, IExcelHelper helper) : IReport
+public sealed class DocumentShareActivityReport(IDocumentReportReader reader) : IReport
 {
     private const string DocumentResourceType = "Document";
 
     public string ReportCode => DocumentReportCodes.ShareActivity;
 
-    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         await reader.EnsureDocumentsFeatureAsync(cancellationToken);
 
@@ -43,8 +41,6 @@ public sealed class DocumentShareActivityReport(IDocumentReportReader reader, IE
             .Select(s => new DocumentShareActivityRowVm(s.ResourceId, s.Scopes, s.Purpose, s.AccessCount, s.LastAccessedAt, s.ExpiresAt, s.RevokedAt))
             .ToList();
 
-        var culture = new CultureInfo(filters.Language);
-        var bytes = helper.Export(filters.Name, filters.DateTimeFilter1, filters.DateTimeFilter2, rows, culture);
-        return new ReportExportResult(bytes, rows.Count);
+        return ReportDataset.Create(filters, rows);
     }
 }

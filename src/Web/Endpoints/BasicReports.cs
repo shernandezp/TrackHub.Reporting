@@ -24,52 +24,83 @@ public class BasicReports : EndpointGroupBase
     {
         app.MapGroup(this)
             .RequireAuthorization()
-            .MapPost(GetReport);
+            .MapPost(GetReport)
+            .MapPost(GetReportPreview, "preview");
     }
 
+    // POST /api/BasicReports — streams the rendered report file (xlsx by default, pdf when requested).
+    // The `format` field is optional; existing portal payloads without it keep working.
     public async Task<IResult> GetReport(ISender sender, GetReportQuery query)
     {
-        byte[] fileContent;
         try
         {
-            fileContent = await sender.Send(query);
+            var result = await sender.Send(query);
+            return Results.File(result.Content, result.ContentType, $"{query.ReportCode}{result.FileExtension}");
         }
-        catch (FeatureDisabledException ex)
+        catch (Exception ex) when (TryMapException(ex, out var mapped))
         {
-            return Results.Json(
-                new
-                {
-                    errors = new[]
-                    {
-                        new
-                        {
-                            message = ex.Message,
-                            extensions = new { code = ex.Code, featureKey = ex.FeatureKey }
-                        }
-                    }
-                },
-                statusCode: StatusCodes.Status403Forbidden);
+            return mapped;
         }
-        catch (ReportLimitExceededException ex)
-        {
-            return Results.Json(
-                new
-                {
-                    errors = new[]
-                    {
-                        new
-                        {
-                            message = ex.Message,
-                            extensions = new { code = ex.Code, maxRows = ex.MaxRows }
-                        }
-                    }
-                },
-                statusCode: StatusCodes.Status400BadRequest);
-        }
+    }
 
-        return Results.File(
-            fileContent,
-            "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    // POST /api/BasicReports/preview — returns the JSON preview (first PreviewRows rows + totals).
+    public async Task<IResult> GetReportPreview(ISender sender, GetReportPreviewQuery query)
+    {
+        try
+        {
+            var result = await sender.Send(query);
+            return Results.Json(result);
+        }
+        catch (Exception ex) when (TryMapException(ex, out var mapped))
+        {
+            return mapped;
+        }
+    }
+
+    // Maps the report pipeline's domain exceptions to the shared error envelope + status codes
+    // (spec 06 §7.4). Returns false (so the exception filter lets it propagate to the global handler)
+    // for any exception it does not own.
+    private static bool TryMapException(Exception ex, out IResult result)
+    {
+        result = ex switch
+        {
+            ReportNotFoundException e => ErrorResult(
+                StatusCodes.Status404NotFound, e.Message, e.Code, new { reportCode = e.ReportCode }),
+            FeatureDisabledException e => ErrorResult(
+                StatusCodes.Status403Forbidden, e.Message, e.Code, new { featureKey = e.FeatureKey }),
+            ReportAccessDeniedException e => ErrorResult(
+                StatusCodes.Status403Forbidden, e.Message, e.Code, new { reportCode = e.ReportCode }),
+            UnsupportedReportFormatException e => ErrorResult(
+                StatusCodes.Status400BadRequest, e.Message, e.Code, new { format = e.Format }),
+            ReportLimitExceededException e => ErrorResult(
+                StatusCodes.Status400BadRequest, e.Message, e.Code, new { maxRows = e.MaxRows }),
+            _ => null!
+        };
+        return result is not null;
+    }
+
+    private static IResult ErrorResult(int statusCode, string message, string code, object extraExtensions)
+        => Results.Json(
+            new
+            {
+                errors = new[]
+                {
+                    new
+                    {
+                        message,
+                        extensions = Merge(code, extraExtensions)
+                    }
+                }
+            },
+            statusCode: statusCode);
+
+    private static Dictionary<string, object?> Merge(string code, object extraExtensions)
+    {
+        var extensions = new Dictionary<string, object?> { ["code"] = code };
+        foreach (var property in extraExtensions.GetType().GetProperties())
+        {
+            extensions[property.Name] = property.GetValue(extraExtensions);
+        }
+        return extensions;
     }
 }
-
