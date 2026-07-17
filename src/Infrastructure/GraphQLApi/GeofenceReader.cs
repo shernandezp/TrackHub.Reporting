@@ -19,17 +19,27 @@ public class GeofenceReader(IGraphQLClientFactory graphQLClient)
               }";
 
     internal const string GeofenceEventsQuery = @"
-                query($from: DateTime!, $to: DateTime!, $transporterId: UUID) {
-                    geofenceEvents(query: {from: $from, to: $to, transporterId: $transporterId}) {
-                        transporterName
-                        geofenceName
-                        datetimeIn
-                        datetimeOut
-                        totalTime
-                        latitude
-                        longitude
+                query($from: DateTime!, $to: DateTime!, $transporterId: UUID, $skip: Int, $take: Int) {
+                    geofenceEvents(query: {from: $from, to: $to, transporterId: $transporterId, skip: $skip, take: $take}) {
+                        items {
+                            transporterName
+                            geofenceName
+                            datetimeIn
+                            datetimeOut
+                            totalTime
+                            dwellSeconds
+                            latitude
+                            longitude
+                        }
+                        totalCount
                     }
                 }";
+
+    // Producer-side page clamp is 500; loop until the page count is reached. The row ceiling
+    // is a defensive source-fetch cap — the governed export limit is enforced downstream
+    // (AppSettings:Reporting), same rationale as DocumentReportReader.MaxRows.
+    private const int PageSize = 500;
+    private const int MaxRows = 100_000;
 
     /// <summary>
     /// Retrieves the device positions asynchronously
@@ -47,22 +57,38 @@ public class GeofenceReader(IGraphQLClientFactory graphQLClient)
     }
 
     /// <summary>
-    /// Retrieves geofence events asynchronously filtered by date range and optional transporter
+    /// Retrieves geofence events asynchronously filtered by date range and optional transporter,
+    /// draining the producer's server-side pages.
     /// </summary>
     public async Task<IEnumerable<GeofenceEventReportVm>> GetGeofenceEventsAsync(FilterDto filters, CancellationToken cancellationToken)
     {
-        var request = new GraphQLRequest
+        var rows = new List<GeofenceEventReportVm>();
+
+        while (rows.Count < MaxRows)
         {
-            Query = GeofenceEventsQuery,
-            Variables = new
+            var request = new GraphQLRequest
             {
-                from = filters.DateTimeFilter1,
-                to = filters.DateTimeFilter2,
-                transporterId = string.IsNullOrEmpty(filters.StringFilter1) ? null : filters.StringFilter1
-            }
-        };
-        return await QueryAsync<IEnumerable<GeofenceEventReportVm>>(request, cancellationToken);
-        
+                Query = GeofenceEventsQuery,
+                Variables = new
+                {
+                    from = filters.DateTimeFilter1,
+                    to = filters.DateTimeFilter2,
+                    transporterId = string.IsNullOrEmpty(filters.StringFilter1) ? null : filters.StringFilter1,
+                    skip = rows.Count,
+                    take = PageSize
+                }
+            };
+            var page = await QueryAsync<GeofenceEventsPageVm>(request, cancellationToken);
+            var items = page.Items as ICollection<GeofenceEventReportVm> ?? [.. page.Items ?? []];
+            if (items.Count == 0)
+                break;
+
+            rows.AddRange(items);
+            if (rows.Count >= page.TotalCount || items.Count < PageSize)
+                break;
+        }
+
+        return rows;
     }
 }
 

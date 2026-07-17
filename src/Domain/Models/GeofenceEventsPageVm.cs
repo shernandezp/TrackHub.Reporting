@@ -16,14 +16,8 @@
 namespace TrackHub.Reporting.Domain.Models;
 
 /// <summary>
-/// View model for geofence event report data.
+/// Page envelope returned by the Geofencing <c>geofenceEvents</c> query (spec 08 pagination).
 /// </summary>
-public readonly record struct GeofenceEventReportVm(
-    string TransporterName,
-    string GeofenceName,
-    DateTimeOffset DatetimeIn,
-    DateTimeOffset? DatetimeOut,
-    string TotalTime,
-    long? DwellSeconds,
-    double Latitude,
-    double Longitude);
+public readonly record struct GeofenceEventsPageVm(
+    IEnumerable<GeofenceEventReportVm> Items,
+    int TotalCount);
