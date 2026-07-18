@@ -22,7 +22,7 @@ using TrackHub.Reporting.Domain.Models;
 namespace TrackHub.Reporting.Application.Report;
 
 // Execution-time catalog visibility enforcement shared by the export and preview handlers
-// (spec 06 §5, §7.2, §17.2): resolve metadata, enforce the required feature key, and enforce the
+//: resolve metadata, enforce the required feature key, and enforce the
 // manager-only role restriction. A hidden report invoked by code fails here — never reaches its data.
 internal static class ReportAccessGuard
 {

@@ -8,6 +8,6 @@ public interface IReport
     string ReportCode { get; }
 
     // Fetches the report's data and projects it into a format-agnostic dataset. The execution pipeline
-    // then renders it (Excel/PDF) or serializes it (preview) — spec 06 §6/§7.2.
+    // then renders it (Excel/PDF) or serializes it (preview).
     Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken);
 }

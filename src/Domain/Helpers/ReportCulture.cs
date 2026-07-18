@@ -18,7 +18,7 @@ using System.Globalization;
 namespace TrackHub.Reporting.Domain.Helpers;
 
 // Resolves the request language into a CultureInfo, falling back to InvariantCulture on an empty or
-// invalid language string so a bad `filters.Language` never 500s the export/preview (spec 06 §7.2).
+// invalid language string so a bad `filters.Language` never 500s the export/preview.
 public static class ReportCulture
 {
     public static CultureInfo Resolve(string? language)

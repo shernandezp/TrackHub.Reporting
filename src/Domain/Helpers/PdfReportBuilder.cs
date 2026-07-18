@@ -26,7 +26,7 @@ namespace TrackHub.Reporting.Domain.Helpers;
 
 /// <summary>
 /// Renders a <see cref="ReportDataset"/> to a single clean A4 tabular PDF via PDFsharp-MigraDoc
-/// (spec 06 §7.2): document title, optional account branding (logo + name), generation timestamp,
+///: document title, optional account branding (logo + name), generation timestamp,
 /// applied-filters block, a table with resx-localized headers repeated on page breaks, page numbers in
 /// the footer, and image content cells (byte[] rendered inline). One shared layout — no per-report PDF.
 /// </summary>

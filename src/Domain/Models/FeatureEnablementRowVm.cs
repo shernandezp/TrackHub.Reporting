@@ -15,7 +15,7 @@
 
 namespace TrackHub.Reporting.Domain.Models;
 
-// Feature-enablement matrix report row (spec 03 §13): one row per (account, feature key).
+// Feature-enablement matrix report row: one row per (account, feature key).
 public readonly record struct FeatureEnablementRowVm(
     string AccountName,
     string FeatureKey,

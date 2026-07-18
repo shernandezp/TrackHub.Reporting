@@ -20,7 +20,7 @@ using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.Report.Factory.Document;
 
-// Document share-activity report (spec 04 §13): every Document public-link grant with its access count,
+// Document share-activity report: every Document public-link grant with its access count,
 // last-access, expiry, and revocation. Filters the account's grants to ResourceType = "Document".
 public sealed class DocumentShareActivityReport(IDocumentReportReader reader) : IReport
 {

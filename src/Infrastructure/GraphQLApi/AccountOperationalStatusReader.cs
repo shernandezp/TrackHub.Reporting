@@ -18,7 +18,7 @@ using Common.Domain.Enums;
 
 namespace TrackHub.Reporting.Infrastructure.GraphQLApi;
 
-// Reads Manager account status via GraphQL (spec 03 §7.4). Backs the cached
+// Reads Manager account status via GraphQL. Backs the cached
 // IAccountOperationalStatusService consumed by AccountStatusBehavior. Returns null for 0 (unknown).
 public class AccountOperationalStatusReader(IGraphQLClientFactory graphQLClient)
     : GraphQLService(graphQLClient.CreateClient(Clients.Manager)), IAccountOperationalStatusReader

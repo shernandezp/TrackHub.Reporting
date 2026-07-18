@@ -20,7 +20,7 @@ using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.Report.Factory.Admin;
 
-// Group-membership export (Account Administrator, account-scoped, spec 03 §13): one row per group ↔
+// Group-membership export (Account Administrator, account-scoped): one row per group ↔
 // user/transporter assignment. The Manager `groupsByAccount` query is scoped to the caller's account.
 public sealed class GroupMembershipReport(IAdminReportReader reader) : IReport
 {

@@ -22,7 +22,7 @@ internal static class GpsReportSupport
         return accountId;
     }
 
-    // Clamp ceiling comes from configuration (spec 06 §7.1) — the caller passes the resolved limits.
+    // Clamp ceiling comes from configuration — the caller passes the resolved limits.
     public static int ResolveTake(FilterDto filters, ReportingLimitsOptions limits, int defaultTake = DefaultPageSize)
     {
         if (!filters.NumericFilter1.HasValue || filters.NumericFilter1.Value <= 0)

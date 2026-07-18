@@ -38,7 +38,7 @@ public class GetReportPreviewQueryHandler(
         : IRequestHandler<GetReportPreviewQuery, ReportPreviewVm>
 {
     /// <summary>
-    /// On-screen preview (spec 06 §7.2, §17.6): same account/catalog/feature/role enforcement as the
+    /// On-screen preview: same account/catalog/feature/role enforcement as the
     /// export, then returns the first PreviewRows rows plus accurate total/truncation metadata. Not audited
     /// (no file leaves the service).
     /// </summary>

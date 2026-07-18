@@ -13,7 +13,7 @@ public sealed class ReportLimitExceededException : Exception
     public string Code => "REPORT_ROW_LIMIT_EXCEEDED";
     public int MaxRows { get; }
 
-    // PDF is capped separately (spec 06 §7.1): oversized datasets return 400 advising Excel, never a
+    // PDF is capped separately: oversized datasets return 400 advising Excel, never a
     // truncated PDF.
     public static ReportLimitExceededException ForPdf(int maxRows)
         => new(maxRows, $"PDF export is limited to {maxRows} rows. Please export this report as Excel (xlsx) instead.");

@@ -20,7 +20,7 @@ using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.Report.Factory.Document;
 
-// Document upload-volume report (spec 04 §13): document counts by Category over the date window
+// Document upload-volume report: document counts by Category over the date window
 // (DateTimeFilter1..2). Uses the group-scoped library search under the caller's token.
 public sealed class DocumentUploadVolumeReport(IDocumentReportReader reader) : IReport
 {

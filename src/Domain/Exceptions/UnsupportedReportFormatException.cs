@@ -1,6 +1,6 @@
 namespace TrackHub.Reporting.Domain.Exceptions;
 
-// An unknown format was requested, or PDF was requested for an Excel-only report (spec 06 §7.4 → 400).
+// An unknown format was requested, or PDF was requested for an Excel-only report.
 public sealed class UnsupportedReportFormatException : Exception
 {
     public UnsupportedReportFormatException(string format)

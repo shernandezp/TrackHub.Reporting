@@ -23,7 +23,7 @@ using TrackHub.Reporting.Domain.Models;
 namespace TrackHub.Reporting.Infrastructure.GraphQLApi;
 
 // Reads the caller-account's branding from the Manager catalog (existing `accountBranding` query) to brand
-// PDF exports (spec 06 §6/§7.2). Runs under the caller's token (header propagation); the result is cached
+// PDF exports. Runs under the caller's token (header propagation); the result is cached
 // for 60 seconds per account so repeated exports stay cheap. Every failure — missing feature, an
 // authorization error (a non-manager exporting a global PDF report may lack Accounts/Read), a transport
 // fault — is swallowed and logged, returning null: a branding lookup must NEVER fail the export.
@@ -90,7 +90,7 @@ public sealed class ReportBrandingReader(
         }
         catch (Exception ex)
         {
-            // Log-and-continue: branding is decorative — never let it fail the export (spec 06 §7.2).
+            // Log-and-continue: branding is decorative — never let it fail the export.
             logger.LogWarning(ex, "Branding lookup failed for account {AccountId}; exporting without branding.", accountId);
             result = null;
         }

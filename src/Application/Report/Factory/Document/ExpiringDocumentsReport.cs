@@ -20,7 +20,7 @@ using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.Report.Factory.Document;
 
-// Expiring-documents report (spec 04 §13). Active documents with an ExpiresAt inside the window
+// Expiring-documents report. Active documents with an ExpiresAt inside the window
 // (NumericFilter1 days, default 30). Owner-visibility + classification are enforced by the Manager query.
 public sealed class ExpiringDocumentsReport(IDocumentReportReader reader) : IReport
 {

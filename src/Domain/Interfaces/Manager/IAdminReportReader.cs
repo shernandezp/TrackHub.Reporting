@@ -17,7 +17,7 @@ using TrackHub.Reporting.Domain.Models;
 
 namespace TrackHub.Reporting.Domain.Interfaces.Manager;
 
-// Reads the Manager admin data the lifecycle/branding reports project (spec 03 §13). Each call runs
+// Reads the Manager admin data the lifecycle/branding reports project. Each call runs
 // under the caller's propagated token; cross-account reads require the appropriate Manager permission.
 public interface IAdminReportReader
 {

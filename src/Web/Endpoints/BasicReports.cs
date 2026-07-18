@@ -58,7 +58,7 @@ public class BasicReports : EndpointGroupBase
     }
 
     // Maps the report pipeline's domain exceptions to the shared error envelope + status codes
-    // (spec 06 §7.4). Returns false (so the exception filter lets it propagate to the global handler)
+    //. Returns false (so the exception filter lets it propagate to the global handler)
     // for any exception it does not own.
     private static bool TryMapException(Exception ex, out IResult result)
     {

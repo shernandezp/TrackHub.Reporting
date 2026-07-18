@@ -22,7 +22,7 @@ namespace TrackHub.Reporting.Domain.Models;
 // header at format time (ExcelHelper / PdfReportBuilder), matching the pre-refactor behavior.
 public readonly record struct ReportColumn(string PropertyName, Type PropertyType);
 
-// The format-agnostic tabular result of running a report (spec 06 §6). Produced once per report
+// The format-agnostic tabular result of running a report. Produced once per report
 // (IReport.GetDatasetAsync) and consumed by every output format: Excel, PDF, and JSON preview.
 public sealed class ReportDataset
 {
@@ -34,13 +34,13 @@ public sealed class ReportDataset
     public required IReadOnlyList<object?[]> Rows { get; init; }
     public IReadOnlyList<KeyValuePair<string, string>> AppliedFilters { get; init; } = [];
 
-    // Optional account branding (spec 03) rendered on the PDF header block when present.
+    // Optional account branding rendered on the PDF header block when present.
     public string? AccountName { get; init; }
     public byte[]? LogoImage { get; init; }
 
     public int RowCount => Rows.Count;
 
-    // Returns a copy of this dataset with the account branding block populated (spec 06 §6/§7.2). Used by
+    // Returns a copy of this dataset with the account branding block populated. Used by
     // the export pipeline to attach branding fetched from Manager to a PDF export without the report itself
     // needing to know about branding. All other fields (data, columns, filters) are carried over unchanged.
     public ReportDataset WithBranding(string? accountName, byte[]? logoImage) => new()
@@ -59,7 +59,7 @@ public sealed class ReportDataset
     // Generic factory: reflects T's public instance properties (declaration order) into Columns and
     // flattens each row into an object?[] in the same order. Title/date range/applied-filters are
     // derived from the FilterDto. This is the single reflection step both Excel and PDF share, so the
-    // column order stays identical to the pre-refactor ClosedXML InsertTable output (spec 06 §16).
+    // column order stays identical to the pre-refactor ClosedXML InsertTable output.
     public static ReportDataset Create<T>(
         FilterDto filters,
         IEnumerable<T> rows,

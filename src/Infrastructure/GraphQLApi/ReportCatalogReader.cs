@@ -24,7 +24,7 @@ using TrackHub.Reporting.Domain.Models;
 
 namespace TrackHub.Reporting.Infrastructure.GraphQLApi;
 
-// Reads governed-catalog metadata for a single report from the Manager catalog (spec 06 §7.2), caching
+// Reads governed-catalog metadata for a single report from the Manager catalog, caching
 // each result — hits and misses — for 60 seconds so the execution pipeline stays cheap under repeated
 // exports. The `reportByCode` query returns null for an unknown code, which is cached as a null result
 // (so the pipeline raises REPORT_NOT_FOUND). Runs under the caller's token (header propagation).

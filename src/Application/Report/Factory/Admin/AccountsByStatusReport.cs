@@ -20,7 +20,7 @@ using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.Report.Factory.Admin;
 
-// Accounts-by-status report (SuperAdministrator, spec 03 §13). Runs under the caller's token; the
+// Accounts-by-status report (SuperAdministrator). Runs under the caller's token; the
 // Manager `accounts` query enforces the Administrative/Read permission. Optional status filter via
 // StringFilter1 (AccountStatus enum name).
 public sealed class AccountsByStatusReport(IAdminReportReader reader) : IReport

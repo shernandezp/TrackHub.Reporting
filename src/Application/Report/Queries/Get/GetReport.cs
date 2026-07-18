@@ -52,7 +52,7 @@ public class GetReportQueryHandler(
     private const string PdfContentType = "application/pdf";
 
     /// <summary>
-    /// Executes the governed report pipeline (spec 06 §7.2): authorize the account, normalize the
+    /// Executes the governed report pipeline: authorize the account, normalize the
     /// requested format, resolve + enforce catalog metadata (feature key, manager-only), run the report
     /// into a dataset, render it to the requested format (enforcing the row limits), and audit the export
     /// with the real format and row count.
@@ -88,7 +88,7 @@ public class GetReportQueryHandler(
                 throw ReportLimitExceededException.ForPdf(limits.MaxPdfRows);
             }
 
-            // Brand the PDF with the account's name/logo (spec 06 §6/§7.2). Null-tolerant: a missing or
+            // Brand the PDF with the account's name/logo. Null-tolerant: a missing or
             // failed branding lookup returns null and the PDF renders without the branding block.
             var branding = await brandingReader.GetBrandingAsync(accountId, cancellationToken);
             if (branding is { } brand)

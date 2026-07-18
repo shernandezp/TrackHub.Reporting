@@ -16,7 +16,7 @@
 namespace TrackHub.Reporting.Domain.Models;
 
 /// <summary>
-/// Page envelope returned by the Geofencing <c>geofenceEvents</c> query (spec 08 pagination).
+/// Page envelope returned by the Geofencing <c>geofenceEvents</c> query.
 /// </summary>
 public readonly record struct GeofenceEventsPageVm(
     IEnumerable<GeofenceEventReportVm> Items,

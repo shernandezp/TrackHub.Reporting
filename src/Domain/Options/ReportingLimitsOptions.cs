@@ -1,6 +1,6 @@
 namespace TrackHub.Reporting.Domain.Options;
 
-// Configurable export limits (spec 06 §7.1, resolved decision 4). Bound from the Reporting service
+// Configurable export limits. Bound from the Reporting service
 // configuration section `AppSettings:Reporting` and registered as a singleton so Domain helpers can take
 // it by constructor. Defaults preserve the pre-refactor hardcoded behavior.
 public sealed class ReportingLimitsOptions

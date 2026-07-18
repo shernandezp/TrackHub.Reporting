@@ -3,7 +3,7 @@ using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.UnitTests;
 
-// Dataset-equivalence tests (spec 06 §16): for a representative VM per report family, the dataset's
+// Dataset-equivalence tests: for a representative VM per report family, the dataset's
 // columns must equal the VM's public property names in declaration order, and each row must carry the
 // same values the pre-refactor ClosedXML pipeline exported (it reflected the same properties).
 [TestFixture]

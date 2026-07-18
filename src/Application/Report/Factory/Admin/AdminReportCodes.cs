@@ -15,7 +15,7 @@
 
 namespace TrackHub.Reporting.Application.Report.Factory.Admin;
 
-// Report codes for the lifecycle/branding reports (spec 03 §13). Kept as local literals rather than in
+// Report codes for the lifecycle/branding reports. Kept as local literals rather than in
 // the shared Common.Domain `Reports` constants to avoid a TrackHubCommon repack for report codes.
 internal static class AdminReportCodes
 {
