@@ -2,10 +2,10 @@ using Common.Application.Interfaces;
 using Common.Domain.Constants;
 using TrackHub.Reporting.Domain.Interfaces;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Interfaces.Telemetry;
 using TrackHub.Reporting.Domain.Models;
+using TrackHub.Reporting.Domain.Options;
 using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.Report.Factory.Gps;
@@ -15,14 +15,14 @@ public sealed class GpsSyncStatisticsReport(
     IAccountFeatureReader features,
     IGpsManagerReader manager,
     IGpsTelemetryReader telemetry,
-    IExcelHelper helper) : IReport
+    ReportingLimitsOptions limits) : IReport
 {
     public string ReportCode => Reports.GpsSyncStatistics;
 
-    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         var accountId = await GpsReportSupport.RequireAccountAsync(user, features, FeatureKeys.GpsIntegration, cancellationToken);
-        var take = GpsReportSupport.ResolveTake(filters);
+        var take = GpsReportSupport.ResolveTake(filters, limits);
         var runs = await telemetry.GetOperatorSyncRunsAsync(accountId, null, take, cancellationToken);
         var operators = (await manager.GetOperatorsAsync(cancellationToken))
             .ToDictionary(o => o.OperatorId, o => o.Name);
@@ -54,7 +54,6 @@ public sealed class GpsSyncStatisticsReport(
             .OrderBy(r => r.Date)
             .ThenBy(r => r.Operator)
             .ToList();
-        var bytes = GpsReportSupport.Export(helper, filters, rows);
-        return new ReportExportResult(bytes, rows.Count);
+        return ReportDataset.Create(filters, rows);
     }
 }

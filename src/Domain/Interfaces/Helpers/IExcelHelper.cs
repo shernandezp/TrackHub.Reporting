@@ -14,11 +14,11 @@
 //
 
 using System.Globalization;
+using TrackHub.Reporting.Domain.Models;
 
 namespace TrackHub.Reporting.Domain.Interfaces.Helpers;
 
 public interface IExcelHelper
 {
-    byte[] Export<T>(string title, DateTimeOffset? fromDate, DateTimeOffset? toDate, IEnumerable<T> data, CultureInfo culture);
+    byte[] Export(ReportDataset dataset, CultureInfo culture);
 }
-

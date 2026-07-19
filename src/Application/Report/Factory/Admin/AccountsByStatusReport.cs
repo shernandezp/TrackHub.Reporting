@@ -13,23 +13,21 @@
 //  limitations under the License.
 //
 
-using System.Globalization;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.Report.Factory.Admin;
 
-// Accounts-by-status report (SuperAdministrator, spec 03 §13). Runs under the caller's token; the
+// Accounts-by-status report (SuperAdministrator). Runs under the caller's token; the
 // Manager `accounts` query enforces the Administrative/Read permission. Optional status filter via
 // StringFilter1 (AccountStatus enum name).
-public sealed class AccountsByStatusReport(IAdminReportReader reader, IExcelHelper helper) : IReport
+public sealed class AccountsByStatusReport(IAdminReportReader reader) : IReport
 {
     public string ReportCode => AdminReportCodes.AccountsByStatus;
 
-    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         var accounts = await reader.GetAccountsAsync(cancellationToken);
 
@@ -43,8 +41,6 @@ public sealed class AccountsByStatusReport(IAdminReportReader reader, IExcelHelp
             .Select(a => new AccountByStatusRowVm(a.Name, a.Status, a.TypeId, a.Active, a.LastModified))
             .ToList();
 
-        var culture = new CultureInfo(filters.Language);
-        var bytes = helper.Export(filters.Name, filters.DateTimeFilter1, filters.DateTimeFilter2, rows, culture);
-        return new ReportExportResult(bytes, rows.Count);
+        return ReportDataset.Create(filters, rows);
     }
 }

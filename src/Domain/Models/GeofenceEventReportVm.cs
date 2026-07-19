@@ -24,5 +24,6 @@ public readonly record struct GeofenceEventReportVm(
     DateTimeOffset DatetimeIn,
     DateTimeOffset? DatetimeOut,
     string TotalTime,
+    long? DwellSeconds,
     double Latitude,
     double Longitude);

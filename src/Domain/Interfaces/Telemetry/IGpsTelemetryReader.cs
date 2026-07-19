@@ -16,7 +16,7 @@ using TrackHub.Reporting.Domain.Models.Manager;
 
 namespace TrackHub.Reporting.Domain.Interfaces.Telemetry;
 
-// Telemetry reads served by the TrackHub.Telemetry service (spec 01.3 §5.5). Master-data reads
+// Telemetry reads served by the TrackHub.Telemetry service. Master-data reads
 // (operators, devices, assignments) remain on IGpsManagerReader.
 public interface IGpsTelemetryReader
 {

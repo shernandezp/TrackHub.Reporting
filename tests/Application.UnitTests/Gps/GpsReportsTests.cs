@@ -1,14 +1,14 @@
-using System.Globalization;
 using Moq;
 using Common.Application.Interfaces;
 using Common.Domain.Constants;
 using TrackHub.Reporting.Application.Report.Factory.Gps;
+using TrackHub.Reporting.Application.UnitTests;
 using TrackHub.Reporting.Domain.Exceptions;
 using TrackHub.Reporting.Domain.Interfaces;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Interfaces.Telemetry;
 using TrackHub.Reporting.Domain.Models.Manager;
+using TrackHub.Reporting.Domain.Options;
 using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.UnitTests.Gps;
@@ -16,21 +16,11 @@ namespace TrackHub.Reporting.Application.UnitTests.Gps;
 [TestFixture]
 public class GpsReportsTests
 {
-    private sealed class StubExcelHelper : IExcelHelper
-    {
-        public int LastRowCount;
-        public byte[] Export<T>(string title, DateTimeOffset? fromDate, DateTimeOffset? toDate, IEnumerable<T> data, CultureInfo culture)
-        {
-            LastRowCount = data is ICollection<T> c ? c.Count : data.Count();
-            return [1, 2, 3];
-        }
-    }
-
     private Mock<IUser> _user = null!;
     private Mock<IAccountFeatureReader> _features = null!;
     private Mock<IGpsManagerReader> _manager = null!;
     private Mock<IGpsTelemetryReader> _telemetry = null!;
-    private StubExcelHelper _excel = null!;
+    private ReportingLimitsOptions _limits = null!;
     private Guid _accountId;
     private FilterDto _filters;
 
@@ -41,7 +31,7 @@ public class GpsReportsTests
         _features = new Mock<IAccountFeatureReader>();
         _manager = new Mock<IGpsManagerReader>();
         _telemetry = new Mock<IGpsTelemetryReader>();
-        _excel = new StubExcelHelper();
+        _limits = new ReportingLimitsOptions();
         _accountId = Guid.NewGuid();
         _user.Setup(u => u.AccountId).Returns(_accountId);
         _features.Setup(f => f.EnsureFeatureEnabledAsync(_accountId, It.IsAny<string>(), It.IsAny<CancellationToken>()))
@@ -56,16 +46,16 @@ public class GpsReportsTests
     {
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(new GpsProviderHealthSummaryReport(_manager.Object, _telemetry.Object, _excel).ReportCode, Is.EqualTo("gps.provider-health-summary"));
-            Assert.That(new GpsProviderSyncHistoryReport(_user.Object, _features.Object, _telemetry.Object, _excel).ReportCode, Is.EqualTo("gps.provider-sync-history"));
-            Assert.That(new GpsSyncStatisticsReport(_user.Object, _features.Object, _manager.Object, _telemetry.Object, _excel).ReportCode, Is.EqualTo("gps.sync-statistics"));
-            Assert.That(new GpsSynchronizedDeviceInventoryReport(_user.Object, _features.Object, _manager.Object, _excel).ReportCode, Is.EqualTo("gps.synchronized-device-inventory"));
-            Assert.That(new GpsRecentlyAddedDevicesReport(_user.Object, _features.Object, _manager.Object, _excel).ReportCode, Is.EqualTo("gps.recently-added-devices"));
-            Assert.That(new GpsUnassignedDevicesReport(_user.Object, _features.Object, _manager.Object, _excel).ReportCode, Is.EqualTo("gps.unassigned-devices"));
-            Assert.That(new GpsIgnoredDevicesReport(_user.Object, _features.Object, _manager.Object, _excel).ReportCode, Is.EqualTo("gps.ignored-devices"));
-            Assert.That(new GpsAssignmentHistoryReport(_user.Object, _features.Object, _manager.Object, _excel).ReportCode, Is.EqualTo("gps.assignment-history"));
-            Assert.That(new GpsLatestPositionFreshnessReport(_user.Object, _features.Object, _manager.Object, _telemetry.Object, _excel).ReportCode, Is.EqualTo("gps.latest-position-freshness"));
-            Assert.That(new GpsPositionHistoryReport(_user.Object, _features.Object, _telemetry.Object, _excel).ReportCode, Is.EqualTo("gps.position-history"));
+            Assert.That(new GpsProviderHealthSummaryReport(_manager.Object, _telemetry.Object).ReportCode, Is.EqualTo("gps.provider-health-summary"));
+            Assert.That(new GpsProviderSyncHistoryReport(_user.Object, _features.Object, _telemetry.Object, _limits).ReportCode, Is.EqualTo("gps.provider-sync-history"));
+            Assert.That(new GpsSyncStatisticsReport(_user.Object, _features.Object, _manager.Object, _telemetry.Object, _limits).ReportCode, Is.EqualTo("gps.sync-statistics"));
+            Assert.That(new GpsSynchronizedDeviceInventoryReport(_user.Object, _features.Object, _manager.Object).ReportCode, Is.EqualTo("gps.synchronized-device-inventory"));
+            Assert.That(new GpsRecentlyAddedDevicesReport(_user.Object, _features.Object, _manager.Object).ReportCode, Is.EqualTo("gps.recently-added-devices"));
+            Assert.That(new GpsUnassignedDevicesReport(_user.Object, _features.Object, _manager.Object).ReportCode, Is.EqualTo("gps.unassigned-devices"));
+            Assert.That(new GpsIgnoredDevicesReport(_user.Object, _features.Object, _manager.Object).ReportCode, Is.EqualTo("gps.ignored-devices"));
+            Assert.That(new GpsAssignmentHistoryReport(_user.Object, _features.Object, _manager.Object).ReportCode, Is.EqualTo("gps.assignment-history"));
+            Assert.That(new GpsLatestPositionFreshnessReport(_user.Object, _features.Object, _manager.Object, _telemetry.Object).ReportCode, Is.EqualTo("gps.latest-position-freshness"));
+            Assert.That(new GpsPositionHistoryReport(_user.Object, _features.Object, _telemetry.Object, _limits).ReportCode, Is.EqualTo("gps.position-history"));
         }
     }
 
@@ -78,11 +68,11 @@ public class GpsReportsTests
         _telemetry.Setup(m => m.GetOperatorHealthSummaryAsync(opId, 24, It.IsAny<CancellationToken>()))
             .ReturnsAsync(new ManagerOperatorHealthSummaryVm(opId, DateTimeOffset.UtcNow.AddDays(-1), 10, 9, 0, 0, 1, 0.9, 25.5, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow, "TIMEOUT"));
 
-        var report = new GpsProviderHealthSummaryReport(_manager.Object, _telemetry.Object, _excel);
-        var result = await report.GenerateAsync(_filters, CancellationToken.None);
+        var report = new GpsProviderHealthSummaryReport(_manager.Object, _telemetry.Object);
+        var result = await report.GetDatasetAsync(_filters, CancellationToken.None);
 
         Assert.That(result.RowCount, Is.EqualTo(1));
-        Assert.That(_excel.LastRowCount, Is.EqualTo(1));
+        Assert.That(result.Cell(0, "OperatorName"), Is.EqualTo("Op1"));
         _telemetry.Verify(m => m.GetOperatorHealthSummaryAsync(opId, 24, It.IsAny<CancellationToken>()), Times.Once);
     }
 
@@ -91,8 +81,8 @@ public class GpsReportsTests
     {
         _features.Setup(f => f.EnsureFeatureEnabledAsync(_accountId, FeatureKeys.GpsPositionHistory, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new FeatureDisabledException(FeatureKeys.GpsPositionHistory));
-        var report = new GpsPositionHistoryReport(_user.Object, _features.Object, _telemetry.Object, _excel);
-        Assert.ThrowsAsync<FeatureDisabledException>(() => report.GenerateAsync(_filters, CancellationToken.None));
+        var report = new GpsPositionHistoryReport(_user.Object, _features.Object, _telemetry.Object, _limits);
+        Assert.ThrowsAsync<FeatureDisabledException>(() => report.GetDatasetAsync(_filters, CancellationToken.None));
         _telemetry.Verify(m => m.GetPositionHistoryAsync(It.IsAny<Guid>(), It.IsAny<Guid?>(), It.IsAny<Guid?>(), It.IsAny<int>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -101,8 +91,8 @@ public class GpsReportsTests
     {
         _features.Setup(f => f.EnsureFeatureEnabledAsync(_accountId, FeatureKeys.GpsIntegration, It.IsAny<CancellationToken>()))
             .ThrowsAsync(new FeatureDisabledException(FeatureKeys.GpsIntegration));
-        var report = new GpsUnassignedDevicesReport(_user.Object, _features.Object, _manager.Object, _excel);
-        Assert.ThrowsAsync<FeatureDisabledException>(() => report.GenerateAsync(_filters, CancellationToken.None));
+        var report = new GpsUnassignedDevicesReport(_user.Object, _features.Object, _manager.Object);
+        Assert.ThrowsAsync<FeatureDisabledException>(() => report.GetDatasetAsync(_filters, CancellationToken.None));
         _manager.Verify(m => m.GetUnassignedDevicesAsync(It.IsAny<Guid>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -110,8 +100,8 @@ public class GpsReportsTests
     public void Report_ShouldThrowUnauthorized_WhenAccountClaimMissing()
     {
         _user.Setup(u => u.AccountId).Returns((Guid?)null);
-        var report = new GpsUnassignedDevicesReport(_user.Object, _features.Object, _manager.Object, _excel);
-        Assert.ThrowsAsync<UnauthorizedAccessException>(() => report.GenerateAsync(_filters, CancellationToken.None));
+        var report = new GpsUnassignedDevicesReport(_user.Object, _features.Object, _manager.Object);
+        Assert.ThrowsAsync<UnauthorizedAccessException>(() => report.GetDatasetAsync(_filters, CancellationToken.None));
         _features.Verify(f => f.EnsureFeatureEnabledAsync(It.IsAny<Guid>(), It.IsAny<string>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 
@@ -127,8 +117,8 @@ public class GpsReportsTests
             .ReturnsAsync(List(new ManagerOperatorVm(opId, "Op1", true)));
 
         var filters = _filters with { NumericFilter1 = 7 };
-        var report = new GpsRecentlyAddedDevicesReport(_user.Object, _features.Object, _manager.Object, _excel);
-        var result = await report.GenerateAsync(filters, CancellationToken.None);
+        var report = new GpsRecentlyAddedDevicesReport(_user.Object, _features.Object, _manager.Object);
+        var result = await report.GetDatasetAsync(filters, CancellationToken.None);
 
         Assert.That(result.RowCount, Is.EqualTo(1));
     }
@@ -146,8 +136,8 @@ public class GpsReportsTests
         _manager.Setup(m => m.GetOperatorsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(List(new ManagerOperatorVm(opId, "Op1", true)));
 
-        var report = new GpsProviderSyncHistoryReport(_user.Object, _features.Object, _telemetry.Object, _excel);
-        var result = await report.GenerateAsync(_filters, CancellationToken.None);
+        var report = new GpsProviderSyncHistoryReport(_user.Object, _features.Object, _telemetry.Object, _limits);
+        var result = await report.GetDatasetAsync(_filters, CancellationToken.None);
 
         Assert.That(result.RowCount, Is.EqualTo(1));
     }
@@ -162,8 +152,8 @@ public class GpsReportsTests
         _manager.Setup(m => m.GetOperatorsAsync(It.IsAny<CancellationToken>()))
             .ReturnsAsync(List(new ManagerOperatorVm(opId, "Op1", true)));
 
-        var report = new GpsIgnoredDevicesReport(_user.Object, _features.Object, _manager.Object, _excel);
-        var result = await report.GenerateAsync(_filters, CancellationToken.None);
+        var report = new GpsIgnoredDevicesReport(_user.Object, _features.Object, _manager.Object);
+        var result = await report.GetDatasetAsync(_filters, CancellationToken.None);
 
         Assert.That(result.RowCount, Is.EqualTo(1));
         _manager.Verify(m => m.GetSynchronizedDevicesAsync(_accountId, "IGNORED", null, It.IsAny<CancellationToken>()), Times.Once);

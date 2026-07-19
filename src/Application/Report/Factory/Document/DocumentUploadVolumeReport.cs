@@ -13,22 +13,20 @@
 //  limitations under the License.
 //
 
-using System.Globalization;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.Report.Factory.Document;
 
-// Document upload-volume report (spec 04 §13): document counts by Category over the date window
+// Document upload-volume report: document counts by Category over the date window
 // (DateTimeFilter1..2). Uses the group-scoped library search under the caller's token.
-public sealed class DocumentUploadVolumeReport(IDocumentReportReader reader, IExcelHelper helper) : IReport
+public sealed class DocumentUploadVolumeReport(IDocumentReportReader reader) : IReport
 {
     public string ReportCode => DocumentReportCodes.UploadVolume;
 
-    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         await reader.EnsureDocumentsFeatureAsync(cancellationToken);
 
@@ -41,8 +39,6 @@ public sealed class DocumentUploadVolumeReport(IDocumentReportReader reader, IEx
             .ThenBy(r => r.Category, StringComparer.OrdinalIgnoreCase)
             .ToList();
 
-        var culture = new CultureInfo(filters.Language);
-        var bytes = helper.Export(filters.Name, filters.DateTimeFilter1, filters.DateTimeFilter2, rows, culture);
-        return new ReportExportResult(bytes, rows.Count);
+        return ReportDataset.Create(filters, rows);
     }
 }

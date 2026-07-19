@@ -14,61 +14,73 @@
 //
 
 using System.Globalization;
-using System.Resources;
 using ClosedXML.Excel;
 using Common.Domain.Extensions;
 using TrackHub.Reporting.Domain.Exceptions;
 using TrackHub.Reporting.Domain.Interfaces.Helpers;
+using TrackHub.Reporting.Domain.Models;
+using TrackHub.Reporting.Domain.Options;
 
 namespace TrackHub.Reporting.Domain.Helpers;
 
 /// <summary>
-/// Helper class for exporting data to Excel format.
+/// Helper class for exporting a <see cref="ReportDataset"/> to Excel format. Produces output equivalent
+/// to the pre-refactor generic pipeline: title cell A1, a resx-localized header row, typed/formatted
+/// data rows, and a single ClosedXML table on a sheet named "Report".
 /// </summary>
-public sealed class ExcelHelper : IExcelHelper
+public sealed class ExcelHelper(ReportingLimitsOptions limits) : IExcelHelper
 {
-    private const int MaxReportRows = 100_000;
+    private static readonly string[] CoordinatesFields = ["Latitude", "Longitude"];
 
-    /// <summary>
-    /// Exports the given data to an Excel file.
-    /// </summary>
-    /// <typeparam name="T">The type of the data to export.</typeparam>
-    /// <param name="title">The title of the report.</param>
-    /// <param name="fromDate">The start date of the report.</param>
-    /// <param name="toDate">The end date of the report.</param>
-    /// <param name="data">The data to export.</param>
-    /// <returns>A memory stream containing the Excel file.</returns>
-    public byte[] Export<T>(string title, DateTimeOffset? fromDate, DateTimeOffset? toDate, IEnumerable<T> data, CultureInfo culture)
+    public byte[] Export(ReportDataset dataset, CultureInfo culture)
     {
-        var materializedData = data as ICollection<T> ?? [.. data];
-        if (materializedData.Count > MaxReportRows)
-            throw new ReportLimitExceededException(MaxReportRows);
+        if (dataset.RowCount > limits.MaxExportRows)
+            throw new ReportLimitExceededException(limits.MaxExportRows);
 
         using var workbook = new XLWorkbook();
         var worksheet = workbook.Worksheets.Add("Report");
-        worksheet.Cell("A1").Value = GetDateLabel(fromDate, toDate, title);
+
+        worksheet.Cell("A1").Value = GetDateLabel(dataset.FromDate, dataset.ToDate, dataset.Title);
         worksheet.Cell("A1").Style.Font.SetBold(true);
         worksheet.Cell("A1").Style.Font.FontSize = 16;
 
-        var table = worksheet.Cell("A2").InsertTable(materializedData.AsEnumerable());
-
-        var properties = typeof(T).GetProperties().ToList();
-
-        var resourceManager = new ResourceManager(typeof(Resources.Resources));
-
-        for (int colNumber = 1; colNumber <= properties.Count; colNumber++)
+        var columns = dataset.Columns;
+        var columnCount = columns.Count;
+        if (columnCount == 0)
         {
-            var property = properties[colNumber - 1];
-            SetColumnFormat(worksheet, colNumber, property.PropertyType, property.Name);
-
-            // Set headers
-            var headerCell = table.Column(colNumber).FirstCell();
-            var displayName = resourceManager.GetString(property.Name, culture) ?? property.Name;
-            headerCell.SetValue(displayName);
+            // No columns to project — return a workbook carrying just the title.
+            using var titleOnly = new MemoryStream();
+            workbook.SaveAs(titleOnly);
+            return titleOnly.ToArray();
         }
 
-        worksheet.Range(1, 1, 1, table.ColumnCount()).Merge();
+        // Header row at row 2 (property names first, so the table's field names stay unique), data below.
+        for (var col = 0; col < columnCount; col++)
+        {
+            worksheet.Cell(2, col + 1).Value = columns[col].PropertyName;
+        }
+
+        for (var row = 0; row < dataset.Rows.Count; row++)
+        {
+            var values = dataset.Rows[row];
+            for (var col = 0; col < columnCount; col++)
+            {
+                SetCell(worksheet.Cell(3 + row, col + 1), values[col]);
+            }
+        }
+
+        var tableRange = worksheet.Range(2, 1, 2 + dataset.Rows.Count, columnCount);
+        var table = tableRange.CreateTable();
         table.Theme = XLTableTheme.TableStyleMedium9;
+
+        // Per-type column formats + localized headers (overwriting the property-name placeholders).
+        for (var col = 0; col < columnCount; col++)
+        {
+            SetColumnFormat(worksheet, col + 1, columns[col].PropertyType, columns[col].PropertyName);
+            table.Field(col).Name = ReportHeaderResolver.Resolve(columns[col].PropertyName, culture);
+        }
+
+        worksheet.Range(1, 1, 1, columnCount).Merge();
         worksheet.Columns().AdjustToContents();
 
         using var memoryStream = new MemoryStream();
@@ -76,14 +88,56 @@ public sealed class ExcelHelper : IExcelHelper
         return memoryStream.ToArray();
     }
 
-    private static readonly string[] CoordinatesFields = ["Latitude", "Longitude"];
+    // Writes an arbitrary boxed cell value using ClosedXML's typed conversions so the per-column number
+    // and date formats apply (DateTimeOffset is normalized to its UTC DateTime, per the UTC-everywhere rule).
+    private static void SetCell(IXLCell cell, object? value)
+    {
+        switch (value)
+        {
+            case null:
+                break;
+            case string s:
+                cell.Value = s;
+                break;
+            case bool b:
+                cell.Value = b;
+                break;
+            case DateTimeOffset dto:
+                cell.Value = dto.UtcDateTime;
+                break;
+            case DateTime dt:
+                cell.Value = dt;
+                break;
+            case double d:
+                cell.Value = d;
+                break;
+            case float f:
+                cell.Value = f;
+                break;
+            case decimal m:
+                cell.Value = m;
+                break;
+            case int i:
+                cell.Value = i;
+                break;
+            case long l:
+                cell.Value = l;
+                break;
+            case short sh:
+                cell.Value = sh;
+                break;
+            case byte bt:
+                cell.Value = bt;
+                break;
+            default:
+                cell.Value = value.ToString();
+                break;
+        }
+    }
 
     /// <summary>
-    /// Sets the format of a column based on the property type.
+    /// Sets the format of a column based on the property type (unchanged from the pre-refactor helper).
     /// </summary>
-    /// <param name="worksheet">The worksheet containing the column.</param>
-    /// <param name="colNumber">The column number.</param>
-    /// <param name="propertyType">The type of the property.</param>
     private static void SetColumnFormat(IXLWorksheet worksheet, int colNumber, Type propertyType, string propertyName)
     {
         switch (propertyType)
@@ -111,15 +165,10 @@ public sealed class ExcelHelper : IExcelHelper
     }
 
     /// <summary>
-    /// Generates a label for the date range of the report.
+    /// Generates a label for the date range of the report (unchanged from the pre-refactor helper).
     /// </summary>
-    /// <param name="fromDate">The start date of the report.</param>
-    /// <param name="toDate">The end date of the report.</param>
-    /// <param name="title">The title of the report.</param>
-    /// <returns>A string representing the date range label.</returns>
     private static string GetDateLabel(DateTimeOffset? fromDate, DateTimeOffset? toDate, string title)
         => toDate != null
             ? $"{title} - ({fromDate.FormatDateTime()} - {toDate.FormatDateTime()})"
             : fromDate != null ? $"{title} - ({fromDate.FormatDate()})" : title;
 }
-

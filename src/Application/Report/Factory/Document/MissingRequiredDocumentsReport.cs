@@ -13,9 +13,7 @@
 //  limitations under the License.
 //
 
-using System.Globalization;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
@@ -26,13 +24,13 @@ namespace TrackHub.Reporting.Application.Report.Factory.Document;
 // required document types (enabled + required) that lack an Active document. Three Manager calls total:
 // the feature gate, the document types, and one batched compliance read (owner visibility enforced
 // server-side — previously one documentsForOwner call per transporter).
-public sealed class MissingRequiredDocumentsReport(IDocumentReportReader reader, IExcelHelper helper) : IReport
+public sealed class MissingRequiredDocumentsReport(IDocumentReportReader reader) : IReport
 {
     private const string OwnerTypeTransporter = "Transporter";
 
     public string ReportCode => DocumentReportCodes.MissingRequiredDocuments;
 
-    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         await reader.EnsureDocumentsFeatureAsync(cancellationToken);
 
@@ -44,7 +42,7 @@ public sealed class MissingRequiredDocumentsReport(IDocumentReportReader reader,
         var rows = new List<MissingRequiredDocumentRowVm>();
         if (requiredCategories.Count == 0)
         {
-            return Export(filters, rows);
+            return ReportDataset.Create(filters, rows);
         }
 
         var compliance = await reader.GetTransporterDocumentComplianceAsync(cancellationToken);
@@ -57,13 +55,6 @@ public sealed class MissingRequiredDocumentsReport(IDocumentReportReader reader,
             }
         }
 
-        return Export(filters, rows);
-    }
-
-    private ReportExportResult Export(FilterDto filters, List<MissingRequiredDocumentRowVm> rows)
-    {
-        var culture = new CultureInfo(filters.Language);
-        var bytes = helper.Export(filters.Name, filters.DateTimeFilter1, filters.DateTimeFilter2, rows, culture);
-        return new ReportExportResult(bytes, rows.Count);
+        return ReportDataset.Create(filters, rows);
     }
 }

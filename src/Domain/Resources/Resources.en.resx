@@ -375,4 +375,22 @@
   <data name="SharedDocumentId" xml:space="preserve">
     <value>Document Id</value>
   </data>
+  <data name="GeneratedAt" xml:space="preserve">
+    <value>Generated</value>
+  </data>
+  <data name="FilterFrom" xml:space="preserve">
+    <value>From</value>
+  </data>
+  <data name="FilterTo" xml:space="preserve">
+    <value>To</value>
+  </data>
+  <data name="Filter" xml:space="preserve">
+    <value>Filter</value>
+  </data>
+  <data name="Page" xml:space="preserve">
+    <value>Page</value>
+  </data>
+  <data name="PageOf" xml:space="preserve">
+    <value>of</value>
+  </data>
 </root>

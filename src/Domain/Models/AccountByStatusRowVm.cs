@@ -15,7 +15,7 @@
 
 namespace TrackHub.Reporting.Domain.Models;
 
-// Accounts-by-status report row (spec 03 §13). Property order = Excel column order; header labels come
+// Accounts-by-status report row. Property order = Excel column order; header labels come
 // from Resources.resx keyed by property name.
 public readonly record struct AccountByStatusRowVm(
     string AccountName,

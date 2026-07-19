@@ -17,7 +17,7 @@ using TrackHub.Reporting.Domain.Models;
 
 namespace TrackHub.Reporting.Domain.Interfaces.Manager;
 
-// Reads the Manager document data the reports project (spec 04 §13). Each call runs under the caller's
+// Reads the Manager document data the reports project. Each call runs under the caller's
 // propagated token; the Manager query enforces owner-visibility + classification and the `documents`
 // feature gate. All list reads page transparently up to the 100k report row limit.
 public interface IDocumentReportReader

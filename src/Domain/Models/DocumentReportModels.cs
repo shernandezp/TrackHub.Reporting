@@ -15,7 +15,7 @@
 
 namespace TrackHub.Reporting.Domain.Models;
 
-// Intermediate projections deserialized from Manager GraphQL for the document reports (spec 04 §13).
+// Intermediate projections deserialized from Manager GraphQL for the document reports.
 public readonly record struct ReportDocumentVm(
     string Category, string OwnerEntityType, string OwnerEntityId, string FileName,
     string Classification, string Status, DateTimeOffset? ExpiresAt);

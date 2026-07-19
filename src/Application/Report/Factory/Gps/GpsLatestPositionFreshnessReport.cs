@@ -2,7 +2,6 @@ using Common.Application.Interfaces;
 using Common.Domain.Constants;
 using TrackHub.Reporting.Domain.Interfaces;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Interfaces.Telemetry;
 using TrackHub.Reporting.Domain.Models;
@@ -14,12 +13,11 @@ public sealed class GpsLatestPositionFreshnessReport(
     IUser user,
     IAccountFeatureReader features,
     IGpsManagerReader manager,
-    IGpsTelemetryReader telemetry,
-    IExcelHelper helper) : IReport
+    IGpsTelemetryReader telemetry) : IReport
 {
     public string ReportCode => Reports.GpsLatestPositionFreshness;
 
-    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         _ = await GpsReportSupport.RequireAccountAsync(user, features, FeatureKeys.GpsIntegration, cancellationToken);
         var operators = await manager.GetOperatorsAsync(cancellationToken);
@@ -46,7 +44,6 @@ public sealed class GpsLatestPositionFreshnessReport(
                     op.Name));
             }
         }
-        var bytes = GpsReportSupport.Export(helper, filters, rows);
-        return new ReportExportResult(bytes, rows.Count);
+        return ReportDataset.Create(filters, rows);
     }
 }

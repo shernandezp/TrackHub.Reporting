@@ -15,7 +15,7 @@
 
 namespace TrackHub.Reporting.Domain.Models;
 
-// Intermediate projections deserialized from Manager GraphQL for the admin/lifecycle reports (spec 03 §13).
+// Intermediate projections deserialized from Manager GraphQL for the admin/lifecycle reports.
 public readonly record struct AdminAccountVm(
     Guid AccountId, string Name, string Status, short StatusId, short TypeId, bool Active, DateTimeOffset LastModified);
 

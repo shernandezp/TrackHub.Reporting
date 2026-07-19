@@ -13,25 +13,21 @@
 //  limitations under the License.
 //
 
-using System.Globalization;
 using Common.Domain.Constants;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
 using TrackHub.Reporting.Domain.Interfaces.Geofence;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
 
 namespace TrackHub.Reporting.Application.Report.Factory;
 
-public class GeofenceEvents(IGeofenceReader reader, IExcelHelper helper) : IReport
+public class GeofenceEvents(IGeofenceReader reader) : IReport
 {
     public string ReportCode => Reports.GeofenceEvents;
-    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         var data = await reader.GetGeofenceEventsAsync(filters, cancellationToken);
         var rows = data as ICollection<GeofenceEventReportVm> ?? [.. data];
-        var culture = new CultureInfo(filters.Language);
-        var content = helper.Export(filters.Name, filters.DateTimeFilter1, filters.DateTimeFilter2, rows, culture);
-        return new ReportExportResult(content, rows.Count);
+        return ReportDataset.Create(filters, rows);
     }
 }

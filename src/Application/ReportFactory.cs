@@ -1,3 +1,4 @@
+using TrackHub.Reporting.Domain.Exceptions;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
 
 namespace TrackHub.Reporting.Application;
@@ -8,6 +9,7 @@ public class ReportFactory(IServiceScopeFactory scopeFactory) : IReportFactory
     {
         using var scope = scopeFactory.CreateScope();
         return scope.ServiceProvider.GetServices<IReport>()
-            .First(reader => reader.ReportCode.Equals(reportCode));
+            .FirstOrDefault(reader => reader.ReportCode.Equals(reportCode))
+            ?? throw new ReportNotFoundException(reportCode);
     }
 }

@@ -2,7 +2,6 @@ using Common.Application.Interfaces;
 using Common.Domain.Constants;
 using TrackHub.Reporting.Domain.Interfaces;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
-using TrackHub.Reporting.Domain.Interfaces.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Manager;
 using TrackHub.Reporting.Domain.Models;
 using TrackHub.Reporting.Domain.Records;
@@ -12,12 +11,11 @@ namespace TrackHub.Reporting.Application.Report.Factory.Gps;
 public sealed class GpsAssignmentHistoryReport(
     IUser user,
     IAccountFeatureReader features,
-    IGpsManagerReader manager,
-    IExcelHelper helper) : IReport
+    IGpsManagerReader manager) : IReport
 {
     public string ReportCode => Reports.GpsAssignmentHistory;
 
-    public async Task<ReportExportResult> GenerateAsync(FilterDto filters, CancellationToken cancellationToken)
+    public async Task<ReportDataset> GetDatasetAsync(FilterDto filters, CancellationToken cancellationToken)
     {
         var accountId = await GpsReportSupport.RequireAccountAsync(user, features, FeatureKeys.GpsIntegration, cancellationToken);
         var assignments = await manager.GetAssignmentsByAccountAsync(accountId, false, cancellationToken);
@@ -38,7 +36,6 @@ public sealed class GpsAssignmentHistoryReport(
                 a.EffectiveTo,
                 a.AssignmentReason))
             .ToList();
-        var bytes = GpsReportSupport.Export(helper, filters, rows);
-        return new ReportExportResult(bytes, rows.Count);
+        return ReportDataset.Create(filters, rows);
     }
 }

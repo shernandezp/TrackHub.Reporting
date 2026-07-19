@@ -33,17 +33,18 @@ public static class DependencyInjection
         services.AddScoped<IReport, GpsAssignmentHistoryReport>();
         services.AddScoped<IReport, GpsLatestPositionFreshnessReport>();
         services.AddScoped<IReport, GpsPositionHistoryReport>();
-        // Account lifecycle / branding reports (spec 03 §13).
+        // Account lifecycle / branding reports.
         services.AddScoped<IReport, AccountsByStatusReport>();
         services.AddScoped<IReport, FeatureEnablementMatrixReport>();
         services.AddScoped<IReport, GroupMembershipReport>();
-        // Document reports (spec 04 §13).
+        // Document reports.
         services.AddScoped<IReport, ExpiringDocumentsReport>();
         services.AddScoped<IReport, MissingRequiredDocumentsReport>();
         services.AddScoped<IReport, DocumentShareActivityReport>();
         services.AddScoped<IReport, DocumentUploadVolumeReport>();
         services.AddSingleton<IReportFactory, ReportFactory>();
         services.AddSingleton<IExcelHelper, ExcelHelper>();
+        services.AddSingleton<IPdfReportBuilder, PdfReportBuilder>();
 
         return services;
     }
