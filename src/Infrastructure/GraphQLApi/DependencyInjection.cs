@@ -27,6 +27,7 @@ public static class DependencyInjection
         services.AddScoped<IReportAuditWriter, ReportAuditWriter>();
         services.AddScoped<IAdminReportReader, AdminReportReader>();
         services.AddScoped<IDocumentReportReader, DocumentReportReader>();
+        services.AddScoped<IWorkforceReportReader, WorkforceReportReader>();
         services.AddScoped<IReportCatalogReader, ReportCatalogReader>();
         services.AddScoped<IReportBrandingReader, ReportBrandingReader>();
 

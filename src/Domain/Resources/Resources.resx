@@ -426,4 +426,58 @@
   <data name="PageOf" xml:space="preserve">
     <value>of</value>
   </data>
+  <data name="DriverName" xml:space="preserve">
+    <value>Driver</value>
+  </data>
+  <data name="EmployeeCode" xml:space="preserve">
+    <value>Employee Code</value>
+  </data>
+  <data name="DocumentType" xml:space="preserve">
+    <value>Document Type</value>
+  </data>
+  <data name="DocumentNumber" xml:space="preserve">
+    <value>Document Number</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Phone</value>
+  </data>
+  <data name="LicenseNumber" xml:space="preserve">
+    <value>License Number</value>
+  </data>
+  <data name="LicenseExpiresAt" xml:space="preserve">
+    <value>License Expires At</value>
+  </data>
+  <data name="DefaultTransporterId" xml:space="preserve">
+    <value>Default Transporter</value>
+  </data>
+  <data name="LicenseCategory" xml:space="preserve">
+    <value>License Category</value>
+  </data>
+  <data name="QualificationType" xml:space="preserve">
+    <value>Qualification Type</value>
+  </data>
+  <data name="Number" xml:space="preserve">
+    <value>Number</value>
+  </data>
+  <data name="IssuingAuthority" xml:space="preserve">
+    <value>Issuing Authority</value>
+  </data>
+  <data name="IssuedAt" xml:space="preserve">
+    <value>Issued At</value>
+  </data>
+  <data name="DaysRemaining" xml:space="preserve">
+    <value>Days Remaining</value>
+  </data>
+  <data name="StartsAt" xml:space="preserve">
+    <value>Starts At</value>
+  </data>
+  <data name="EndsAt" xml:space="preserve">
+    <value>Ends At</value>
+  </data>
+  <data name="DurationDays" xml:space="preserve">
+    <value>Duration (Days)</value>
+  </data>
+  <data name="CreatedByPrincipal" xml:space="preserve">
+    <value>Created By</value>
+  </data>
 </root>
