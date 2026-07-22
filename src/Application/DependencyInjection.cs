@@ -5,6 +5,7 @@ using TrackHub.Reporting.Application.Report.Factory;
 using TrackHub.Reporting.Application.Report.Factory.Gps;
 using TrackHub.Reporting.Application.Report.Factory.Admin;
 using TrackHub.Reporting.Application.Report.Factory.Document;
+using TrackHub.Reporting.Application.Report.Factory.Trip;
 using TrackHub.Reporting.Application.Report.Factory.Workforce;
 using TrackHub.Reporting.Domain.Helpers;
 using TrackHub.Reporting.Domain.Interfaces.Factory;
@@ -47,6 +48,13 @@ public static class DependencyInjection
         services.AddScoped<IReport, DriverRegistryReport>();
         services.AddScoped<IReport, QualificationExpirationsReport>();
         services.AddScoped<IReport, AssignmentHistoryReport>();
+
+        services.AddScoped<IReport, TripSummaryReport>();
+        services.AddScoped<IReport, TripDetailReport>();
+        services.AddScoped<IReport, TripOnTimePerformanceReport>();
+        services.AddScoped<IReport, TripStopDwellReport>();
+        services.AddScoped<IReport, TripTollCostReport>();
+        services.AddScoped<IReport, TripPodExportReport>();
         services.AddSingleton<IReportFactory, ReportFactory>();
         services.AddSingleton<IExcelHelper, ExcelHelper>();
         services.AddSingleton<IPdfReportBuilder, PdfReportBuilder>();

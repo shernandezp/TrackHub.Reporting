@@ -26,6 +26,7 @@ We believe in the strength of community collaboration to create effective and ac
 | **Geofencing API**          | [https://github.com/shernandezp/TrackHub.Geofencing](https://github.com/shernandezp/TrackHub.Geofencing)    |
 | **Reporting API**           | [https://github.com/shernandezp/TrackHub.Reporting](https://github.com/shernandezp/TrackHub.Reporting)    |
 | **Telemetry API**           | [https://github.com/shernandezp/TrackHub.Telemetry](https://github.com/shernandezp/TrackHub.Telemetry)    |
+| **Trip Management API**     | [https://github.com/shernandezp/TrackHub.TripManagement](https://github.com/shernandezp/TrackHub.TripManagement)    |
 | **TrackHub Web**            | [https://github.com/shernandezp/TrackHub](https://github.com/shernandezp/TrackHub)          |
 
 
@@ -33,4 +34,4 @@ We believe in the strength of community collaboration to create effective and ac
 
 ## Overview
 
-The Reporting API generates Excel reports by composing data from the other services: master data and GPS integration from the **Management API**, live/stored positions from the **Router API**, geofences from the **Geofencing API**, and position history, operator health, and sync-run telemetry from the **Telemetry API**.
+The Reporting API generates Excel reports by composing data from the other services: master data and GPS integration from the **Management API**, live/stored positions from the **Router API**, geofences from the **Geofencing API**, position history, operator health, and sync-run telemetry from the **Telemetry API**, and trip, stop, toll, and proof-of-delivery data from the **Trip Management API**.
